@@ -3,334 +3,174 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Calendrier (mardis)</title>
+  <title>Calendrier (mardi)</title>
 
   <style>
-    *{ box-sizing:border-box; }
+    *{ box-sizing: border-box; }
 
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
     /* =========================
-      PALETTE TSLSJ (Normes)
-      Bleu #3A5DAE | Bleu foncé #1B365D | Noir K100 | Gris K60 (~#666)
-      + Accents complémentaires (discrets, pour moderniser sans dénaturer)
-      ========================= */
+       PALETTE TSLSJ (Normes)
+       Bleu #3A5DAE | Bleu foncé #1B365D | Noir K100 | Gris K60 (~#666)
+       ========================= */
     :root{
       --tslsj-blue: #3A5DAE;
       --tslsj-navy: #1B365D;
-      --tslsj-black: #111;
-      --tslsj-gray: #666;
+      --tslsj-black:#000000;
+      --tslsj-gray: #666666; /* K60 ≈ #666666 en web */
 
-      /* Accents complémentaires (utilisés avec parcimonie) */
-      --accent-sage: #2E7D6B;
-      --accent-coral: #E06A4A;
+      /* tints (dérivés des couleurs ci-dessus) */
+      --tint-blue-06: rgba(58,93,174,.06);
+      --tint-blue-10: rgba(58,93,174,.10);
+      --tint-blue-16: rgba(58,93,174,.16);
 
-      /* Tints neutres */
-      --bg: #F7F9FC;
-      --panel: rgba(255,255,255,.86);
-      --panel-solid: #fff;
+      --tint-navy-06: rgba(27,54,93,.06);
+      --tint-navy-10: rgba(27,54,93,.10);
+      --tint-navy-16: rgba(27,54,93,.16);
 
+      --tint-black-03: rgba(0,0,0,.03);
       --tint-black-06: rgba(0,0,0,.06);
-      --tint-black-08: rgba(0,0,0,.08);
-      --tint-black-12: rgba(0,0,0,.12);
+      --tint-black-10: rgba(0,0,0,.10);
       --tint-black-14: rgba(0,0,0,.14);
-      --tint-black-18: rgba(0,0,0,.18);
 
-      /* Spacing */
-      --r: 18px;
-      --shadow: 0 14px 30px rgba(27,54,93,.10);
-      --shadow2: 0 10px 18px rgba(0,0,0,.08);
+      --radius-lg: 14px;
+      --radius-md: 12px;
+      --shadow-sm: 0 2px 10px rgba(0,0,0,.06);
 
-      /* Grille horaire: demi-heures */
-      --half: 72px; /* hauteur par demi-heure (ajustable) */
-      --timecol: 86px;
+      /* 30 minutes */
+      --half: 74px;
     }
 
     body{
-      margin:0;
-      font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color: var(--tslsj-black);
-      background:
-        radial-gradient(1100px 450px at 20% -10%, rgba(58,93,174,.12), transparent 55%),
-        radial-gradient(900px 420px at 90% 0%, rgba(46,125,107,.10), transparent 55%),
-        radial-gradient(900px 420px at 70% 80%, rgba(224,106,74,.10), transparent 60%),
-        var(--bg);
-    }
-
-    .page{
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 22px;
+      font-family:'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      margin:20px;
+      color: var(--tslsj-navy);
+      background: linear-gradient(180deg, var(--tint-blue-06), transparent 220px);
     }
 
     h2{
-      margin: 8px 0 10px;
-      font-size: 28px;
-      font-weight: 800;
+      margin: 0 0 14px 0;
+      font-weight: 700;
       letter-spacing: .2px;
       color: var(--tslsj-navy);
     }
 
-    .sub{
-      margin: 0 0 14px;
-      color: rgba(27,54,93,.72);
-      font-size: 13px;
-      line-height: 1.35;
-    }
+    .muted{ opacity:.75; color: var(--tslsj-gray); }
 
-    /* ===== Toolbar ===== */
+    /* ===== Barre de contrôle ===== */
     .bar{
       display:flex;
+      gap:12px;
+      align-items:flex-end;
       flex-wrap:wrap;
-      align-items:center;
-      gap: 10px 12px;
-
-      background: var(--panel);
-      border: 1px solid rgba(27,54,93,.10);
-      border-radius: var(--r);
+      margin-bottom:16px;
       padding: 12px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-
-      position: sticky;
-      top: 12px;
-      z-index: 12;
+      border: 1px solid var(--tint-black-10);
+      border-radius: var(--radius-lg);
+      background: #fff;
+      box-shadow: var(--shadow-sm);
     }
 
-    .bar label{
+    label{
       display:flex;
       flex-direction:column;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      color: rgba(27,54,93,.78);
-      min-width: 180px;
+      gap:6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--tslsj-navy);
     }
 
-    input[type="date"], select{
-      appearance:none;
-      font-family: inherit;
-      font-size: 14px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(0,0,0,.10);
-      background: #fff;
+    select,input,button{
+      padding:10px 12px;
+      font-size:14px;
+      border-radius: 12px;
+      border: 1px solid var(--tint-black-14);
+      background:#fff;
+      color: var(--tslsj-navy);
       outline: none;
-      transition: box-shadow .12s ease, border-color .12s ease;
+      transition: border-color .12s ease, box-shadow .12s ease, transform .12s ease, filter .12s ease;
     }
 
-    input[type="date"]:focus, select:focus{
+    select:focus, input:focus{
       border-color: rgba(58,93,174,.55);
-      box-shadow: 0 0 0 4px rgba(58,93,174,.16);
+      box-shadow: 0 0 0 4px rgba(58,93,174,.12);
     }
 
-    .btn{
-      border: 1px solid rgba(27,54,93,.18);
-      background: linear-gradient(180deg, rgba(58,93,174,.10), rgba(58,93,174,.06));
-      color: var(--tslsj-navy);
-      padding: 10px 12px;
-      border-radius: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: transform .12s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease;
-      box-shadow: 0 10px 18px rgba(58,93,174,.12);
+    button{
+      cursor:pointer;
+      font-weight: 700;
+      border-color: rgba(27,54,93,.25);
+      background: var(--tslsj-blue);
+      color: #fff;
     }
-    .btn:hover{
+    button:hover{
+      filter: brightness(.97);
       transform: translateY(-1px);
-      border-color: rgba(58,93,174,.35);
-      box-shadow: 0 14px 22px rgba(58,93,174,.16);
     }
-    .btn:active{ transform: translateY(0px); }
-    .btn:focus{
-      outline:none;
-      box-shadow: 0 0 0 4px rgba(58,93,174,.18), 0 14px 22px rgba(58,93,174,.16);
-    }
+    button:active{ transform: translateY(0); }
 
-    .btn.secondary{
-      background: #fff;
-      box-shadow: 0 10px 18px rgba(0,0,0,.06);
-    }
-
-    .btn.sage{
-      background: linear-gradient(180deg, rgba(46,125,107,.14), rgba(46,125,107,.08));
-      border-color: rgba(46,125,107,.22);
-      color: #0E3B32;
-      box-shadow: 0 10px 18px rgba(46,125,107,.12);
-    }
-
-    .muted{
-      font-size: 12px;
-      color: rgba(0,0,0,.55);
-      margin-left: 4px;
-    }
-
-    .spacer{
-      flex: 1 1 auto;
-      min-width: 12px;
-    }
-
-    /* ===== Month (Tuesdays only) ===== */
-    .month{
-      margin: 16px 0 14px;
-      background: var(--panel);
-      border: 1px solid rgba(27,54,93,.10);
-      border-radius: var(--r);
-      padding: 14px;
-      box-shadow: var(--shadow2);
-      backdrop-filter: blur(10px);
-    }
-
-    .month-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-    .month-title{
-      font-weight: 900;
-      color: var(--tslsj-navy);
-      letter-spacing: .2px;
-    }
-
-    .tuesday-list{
-      display:grid;
-      grid-template-columns: repeat(5, minmax(140px, 1fr));
-      gap: 10px;
-    }
-
-    .tue-card{
-      border-radius: 16px;
-      padding: 10px 10px;
-      background: #fff;
-      border: 1px solid rgba(0,0,0,.10);
-      box-shadow: 0 10px 18px rgba(0,0,0,.06);
-      cursor: pointer;
-      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
-      position: relative;
-      overflow: hidden;
-    }
-    .tue-card::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background: linear-gradient(90deg, rgba(58,93,174,.10), rgba(46,125,107,.08), rgba(224,106,74,.06));
-      opacity: .55;
-      pointer-events:none;
-      transform: translateY(-40%);
-      filter: blur(14px);
-    }
-    .tue-card > *{ position: relative; }
-
-    .tue-card:hover{
-      transform: translateY(-1px);
-      border-color: rgba(58,93,174,.28);
-      box-shadow: 0 16px 26px rgba(0,0,0,.08);
-    }
-    .tue-card.is-selected{
-      border-color: rgba(58,93,174,.50);
-      box-shadow: 0 0 0 4px rgba(58,93,174,.14), 0 16px 26px rgba(0,0,0,.08);
-    }
-    .tue-date{
-      font-weight: 900;
-      color: var(--tslsj-navy);
-      font-size: 14px;
-      line-height: 1.15;
-    }
-    .tue-meta{
-      margin-top: 6px;
-      font-size: 12px;
-      color: rgba(0,0,0,.58);
-      display:flex;
-      gap: 8px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      padding: 4px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(0,0,0,.12);
-      background: rgba(0,0,0,.03);
-      font-weight: 800;
-      font-size: 11px;
-      color: rgba(0,0,0,.62);
-    }
-    .pill.sage{
-      border-color: rgba(46,125,107,.22);
-      background: rgba(46,125,107,.08);
-      color: #0E3B32;
-    }
-    .pill.coral{
-      border-color: rgba(224,106,74,.22);
-      background: rgba(224,106,74,.10);
-      color: #5A1F12;
-    }
-
-    /* ===== Grid container ===== */
+    /* ===== Matrice ===== */
     .matrix{
-      border-radius: var(--r);
-      overflow: auto; /* important pour sticky en responsive */
-      border: 1px solid rgba(27,54,93,.10);
-      box-shadow: var(--shadow);
-      background: rgba(255,255,255,.65);
-      backdrop-filter: blur(10px);
+      border:1px solid var(--tint-black-10);
+      border-radius: var(--radius-lg);
+      overflow:hidden;
+      background:#fff;
+      box-shadow: var(--shadow-sm);
     }
 
     .matrix-header{
       display:grid;
-      grid-template-columns: var(--timecol) repeat(4, 1fr);
-      gap: 0;
-      background: rgba(255,255,255,.9);
-      border-bottom: 1px solid rgba(0,0,0,.08);
-
-      position: sticky;
-      top: 0;
-      z-index: 8;
+      grid-template-columns: 90px repeat(4, 1fr);
+      background: var(--tint-black-03);
+      border-bottom:1px solid var(--tint-black-10);
     }
-
-    .matrix-header .cell{
-      padding: 12px 12px;
-      font-weight: 900;
+    .matrix-header .h{
+      padding:12px 10px;
+      font-weight:800;
+      border-right:1px solid var(--tint-black-10);
       color: var(--tslsj-navy);
-      border-right: 1px solid rgba(0,0,0,.06);
+      letter-spacing:.2px;
     }
-    .matrix-header .cell:last-child{ border-right:none; }
+    .matrix-header .h:last-child{border-right:0}
 
     .matrix-body{
       display:grid;
-      grid-template-columns: var(--timecol) repeat(4, 1fr);
-      min-height: calc(var(--half) * 16); /* 9h -> 17h = 16 demi-heures */
+      grid-template-columns: 90px repeat(4, 1fr);
+      position:relative;
     }
 
     .time-col{
-      position: sticky;
-      left: 0;
-      z-index: 7;
-      background: rgba(255,255,255,.92);
-      border-right: 1px solid rgba(0,0,0,.06);
+      background: var(--tint-black-03);
+      border-right:1px solid var(--tint-black-10)
     }
-
-    .time-slot{
+    .time-cell{
       height: var(--half);
+      padding: 0 10px;
       display:flex;
-      align-items:flex-start;
-      justify-content:flex-end;
-      padding: 10px 10px 0 8px;
-      font-size: 12px;
-      font-weight: 800;
-      color: rgba(0,0,0,.58);
-      border-bottom: 1px solid rgba(0,0,0,.06);
+      align-items:center;
+      border-top:1px solid var(--tint-black-10);
+      font-variant-numeric:tabular-nums;
+      color: var(--tslsj-navy);
+      font-weight:600;
+      font-size: 12.5px;
     }
+    .time-cell:first-child{border-top:0}
 
     .cat-col{
-      position: relative;
-      border-right: 1px solid rgba(0,0,0,.06);
-    }
-    .cat-col:last-child{ border-right:none; }
+      position:relative;
+      display:grid;
+      grid-auto-rows: var(--half);
+      border-right:1px solid var(--tint-black-10);
 
-    /* Lignes horizontales plus lisibles */
+      /* lanes (chevauchements) */
+      grid-template-columns: repeat(var(--lanes, 1), 1fr);
+      align-content:start;
+      background: #fff;
+    }
+    .cat-col:last-child{border-right:0}
+
+    /* lignes horizontales visibles même si vide */
     .cat-col::before{
       content:"";
       position:absolute;
@@ -339,193 +179,201 @@
         to bottom,
         transparent 0,
         transparent calc(var(--half) - 1px),
-        rgba(0,0,0,.12) calc(var(--half) - 1px),
-        rgba(0,0,0,.12) var(--half)
+        var(--tint-black-10) calc(var(--half) - 1px),
+        var(--tint-black-10) var(--half)
       );
       pointer-events:none;
-      opacity: .6;
+      z-index:0;
     }
 
-    /* ===== Event cards ===== */
+    /* Card */
     .event{
-      position:absolute;
-      left: 10px;
-      right: 10px;
-      border-radius: 16px;
-      padding: 10px 12px;
-
-      background: rgba(58,93,174,.08);
-      border: 1px solid rgba(58,93,174,.16);
-      box-shadow: 0 12px 20px rgba(27,54,93,.10);
-
-      transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease;
-      cursor: pointer;
+      position:relative;
+      z-index:1;
+      margin:8px;
+      padding:8px 10px;
+      border:1px solid var(--tint-black-14);
+      border-radius: var(--radius-md);
+      background:#fff;
+      text-decoration:none;
+      color:inherit;
+      transition: filter .12s ease, transform .12s ease, box-shadow .12s ease;
+      display:block;
+      overflow:hidden;
     }
 
     .event:hover{
+      filter: brightness(0.985);
       transform: translateY(-1px);
-      border-color: rgba(58,93,174,.30);
-      box-shadow: 0 16px 26px rgba(27,54,93,.14);
+      box-shadow: 0 10px 20px rgba(0,0,0,.06);
     }
 
+    .event.disabled{ cursor: default; }
+    .event.disabled:hover{ filter:none; transform:none; box-shadow:none; }
+
     .event .t{
-      font-weight: 900;
-      font-size: 14px;
-      color: var(--tslsj-navy);
-      line-height: 1.22;
-      letter-spacing: .1px;
+      font-weight:700;
+      font-size:15px;
+      line-height:1.2;
+
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 4;
+      overflow: hidden;
     }
 
     .event .m{
-      margin-top: 6px;
-      font-size: 12px;
-      color: rgba(0,0,0,.62);
-      display:flex;
-      gap: 8px;
-      flex-wrap:wrap;
-      align-items:center;
+      font-size:12px;
+      margin-top:3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--tslsj-gray);
+      font-weight:600;
     }
 
+    /* Tag (tu voulais garder des tags de couleurs différentes) */
     .tag{
-      margin-top: 8px;
-      display:inline-flex;
-      align-items:center;
-      gap: 6px;
-      font-size: 10.5px;
-      font-weight: 900;
-      letter-spacing: .25px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(0,0,0,.12);
-      background: rgba(0,0,0,.03);
-      color: rgba(0,0,0,.62);
+      display:inline-block;
+      margin-top:4px;
+      padding:3px 8px;
+      font-size:11px;
+      font-weight:800;
+      border-radius:10px;
+      border:1px solid var(--tint-black-14);
+      width:fit-content;
     }
 
-    /* CTA (lien) plus pro */
+    /* CTA: souligné + flèche */
     .cta{
-      margin-top: 10px;
+      margin-top:6px;
       display:inline-flex;
       align-items:center;
-      gap: 8px;
+      gap:4px;
+      font-size:12px;
+      font-weight:800;
 
-      font-size: 12px;
-      font-weight: 900;
-      text-decoration:none;
-
-      padding: 8px 10px;
-      border-radius: 999px;
-
-      color: var(--tslsj-navy);
-      background: rgba(255,255,255,.78);
-      border: 1px solid rgba(27,54,93,.18);
-      box-shadow: 0 10px 16px rgba(0,0,0,.06);
-
-      width: fit-content;
+      background:none !important;
+      box-shadow:none !important;
+      border:none;
+      border-bottom:1px solid var(--tint-black-14);
+      padding:0 0 2px 0;
+      width:fit-content;
       pointer-events:auto;
 
-      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
       white-space: nowrap;
     }
-    .cta:hover{
-      transform: translateY(-1px);
-      border-color: rgba(58,93,174,.35);
-      box-shadow: 0 14px 22px rgba(0,0,0,.08);
-      background: #fff;
-    }
+
+    .cta,
+    .cta:link,
+    .cta:visited,
+    .cta:hover,
+    .cta:active,
     .cta:focus{
-      outline:none;
-      box-shadow: 0 0 0 4px rgba(58,93,174,.16), 0 14px 22px rgba(0,0,0,.08);
+      background:none !important;
+      box-shadow:none !important;
+      outline:none !important;
+      text-decoration:none;
     }
 
     .arrow{
       display:inline-block;
+      margin-left:4px;
       transition: transform .12s ease;
     }
     .event:hover .arrow{ transform: translateX(2px); }
 
-    /* Couleurs par catégorie (barre accent) */
-    .event[data-cat="formation"]{
-      background: rgba(58,93,174,.10);
-      border-color: rgba(58,93,174,.20);
+    /* =========================
+       Couleurs par catégorie (TSLSJ)
+       - Les cartes: tints + barre accent à gauche (cohérent)
+       - Les tags: couleurs différentes (bleu / bleu foncé / gris / mix)
+       ========================= */
+
+    /* Coworking (bleu) */
+    .type-coworking{
+      background: var(--tint-blue-10);
+      border-color: rgba(58,93,174,.30);
+      box-shadow: inset 4px 0 0 0 var(--tslsj-blue);
     }
-    .event[data-cat="atelier"]{
-      background: rgba(46,125,107,.10);
-      border-color: rgba(46,125,107,.20);
+    .type-coworking .tag{
+      background: var(--tslsj-blue);
+      border-color: rgba(58,93,174,.45);
+      color: #fff;
     }
-    .event[data-cat="webinaire"]{
-      background: rgba(224,106,74,.12);
-      border-color: rgba(224,106,74,.22);
+    .type-coworking .cta{ color: var(--tslsj-blue); border-bottom-color: rgba(58,93,174,.45); }
+
+    /* Réseautage (bleu foncé) */
+    .type-reseautage{
+      background: var(--tint-navy-10);
+      border-color: rgba(27,54,93,.28);
+      box-shadow: inset 4px 0 0 0 var(--tslsj-navy);
     }
-    .event[data-cat="conseils"]{
-      background: rgba(27,54,93,.08);
-      border-color: rgba(27,54,93,.16);
+    .type-reseautage .tag{
+      background: var(--tslsj-navy);
+      border-color: rgba(27,54,93,.45);
+      color: #fff;
+    }
+    .type-reseautage .cta{ color: var(--tslsj-navy); border-bottom-color: rgba(27,54,93,.45); }
+
+    /* Atelier (gris) */
+    .type-atelier{
+      background: var(--tint-black-06);
+      border-color: rgba(0,0,0,.16);
+      box-shadow: inset 4px 0 0 0 var(--tslsj-gray);
+    }
+    .type-atelier .tag{
+      background: var(--tslsj-gray);
+      border-color: rgba(0,0,0,.18);
+      color: #fff;
+    }
+    .type-atelier .cta{ color: var(--tslsj-gray); border-bottom-color: rgba(0,0,0,.18); }
+
+    /* Conseils (mix bleu + foncé pour se distinguer) */
+    .type-conseils{
+      background: var(--tint-blue-10);
+      border-color: rgba(27,54,93,.24);
+      box-shadow: inset 4px 0 0 0 var(--tslsj-navy);
+    }
+    .type-conseils .tag{
+      background: linear-gradient(90deg, var(--tslsj-navy), var(--tslsj-blue));
+      border-color: rgba(27,54,93,.35);
+      color: #fff;
+    }
+    .type-conseils .cta{ color: var(--tslsj-navy); border-bottom-color: rgba(27,54,93,.35); }
+
+    /* Diner pleine largeur */
+    .event.full{
+      grid-column: 1 / -1;
+      max-width:none;
+      pointer-events:auto;
     }
 
-    /* ===== Responsive ===== */
-    @media (max-width: 980px){
-      :root{ --half: 66px; }
-      .tuesday-list{ grid-template-columns: repeat(3, minmax(140px, 1fr)); }
-    }
-    @media (max-width: 860px){
-      :root{ --half: 62px; --timecol: 80px; }
-      .matrix-header, .matrix-body{
-        min-width: 980px; /* scroll horizontal propre */
-      }
-      .tuesday-list{ grid-template-columns: repeat(2, minmax(140px, 1fr)); }
-      .bar label{ min-width: 160px; }
-    }
-    @media (max-width: 520px){
-      h2{ font-size: 24px; }
-      .tuesday-list{ grid-template-columns: 1fr; }
-      .bar{ top: 8px; }
-    }
+    /* Les cartes peuvent scroller si trop de contenu */
+    .cat-col .event{ overflow:auto; }
   </style>
 </head>
 
 <body>
-  <div class="page">
-    <h2>Les mardis Oriance Agora</h2>
-    <p class="sub">
-      Navigation rapide par <strong>mardi précédent / suivant</strong> et sélection dans <strong>Mardis du mois</strong>.
-      (Les autres jours sont volontairement masqués dans la vue mensuelle.)
-    </p>
+  <h2>Les mardis Oriance Agora</h2>
 
-    <div class="bar">
-      <button class="btn secondary" id="prevTue" type="button">← Mardi d’avant</button>
-      <button class="btn secondary" id="nextTue" type="button">Mardi suivant →</button>
+  <div class="bar">
+    <label>Date:
+      <input id="date" type="date" />
+    </label>
 
-      <label>Date (snap mardi) :
-        <input id="date" type="date" />
-      </label>
+    <label>Filtre:
+      <select id="filtre">
+        <option value="">Tous</option>
+      </select>
+    </label>
 
-      <label>Filtre :
-        <select id="filtre">
-          <option value="">Tous</option>
-        </select>
-      </label>
+    <button id="reload">Recharger</button>
+    <span class="muted" id="status"></span>
+  </div>
 
-      <button class="btn sage" id="reload" type="button">Recharger</button>
-
-      <div class="spacer"></div>
-      <span class="muted" id="status"></span>
-    </div>
-
-    <div class="month" aria-label="Mardis du mois">
-      <div class="month-head">
-        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-          <button class="btn secondary" id="prevMonth" type="button">← Mois</button>
-          <div class="month-title" id="monthTitle">Mardis du mois</div>
-          <button class="btn secondary" id="nextMonth" type="button">Mois →</button>
-        </div>
-        <div class="muted" id="monthHint"></div>
-      </div>
-      <div class="tuesday-list" id="tuesdayList"></div>
-    </div>
-
-    <div class="matrix" id="grid">
-      <div class="matrix-header" id="header"></div>
-      <div class="matrix-body" id="body"></div>
-    </div>
+  <div class="matrix" id="grid">
+    <div class="matrix-header" id="header"></div>
+    <div class="matrix-body" id="body"></div>
   </div>
 
   <script>
@@ -553,240 +401,69 @@
     const END_MIN   = 17*60;
     const STEP_MIN  = 30;
 
-    // Catégories affichées (4 colonnes)
-    // (Tu peux renommer les titres sans casser le mapping)
-    const CATEGORIES = [
-      { key:"formation", label:"Formation" },
-      { key:"atelier", label:"Atelier" },
-      { key:"webinaire", label:"Webinaire" },
-      { key:"conseils", label:"Conseils" },
-    ];
-
-    // ----- Utils dates -----
     function pad2(n){ return String(n).padStart(2,"0"); }
-
-    function toYMD(v){
-      if(!v) return "";
-      if (typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
-      const d = new Date(v);
-      if (isNaN(d)) return "";
-      return d.toISOString().slice(0,10);
+    function minutesToHHMM(min){
+      const h = Math.floor(min/60);
+      const m = min % 60;
+      return pad2(h) + ":" + pad2(m);
     }
 
-    function parseYMD(ymd){
-      const [y,m,d] = ymd.split("-").map(Number);
-      return new Date(y, m-1, d);
-    }
+    function parseTimeToMinutes(v){
+      if(!v) return null;
 
-    // Retourne la date (Date) du mardi de la semaine contenant d,
-    // ou prochain/précédent selon dir (0=plus proche dans la semaine, +7/-7)
-    function snapToTuesday(d){
-      const day = d.getDay(); // 0=dim ... 2=mardi
-      const delta = (2 - day); // vers mardi de la même semaine
-      const nd = new Date(d);
-      nd.setDate(d.getDate() + delta);
-      return nd;
-    }
-
-    function addDays(d, n){
-      const nd = new Date(d);
-      nd.setDate(nd.getDate() + n);
-      return nd;
-    }
-
-    function fmtHuman(d){
-      const opts = { weekday:"long", year:"numeric", month:"long", day:"numeric" };
-      return d.toLocaleDateString("fr-CA", opts);
-    }
-
-    function fmtMonthTitle(d){
-      const opts = { month:"long", year:"numeric" };
-      // fr-CA donne des libellés propres au Québec; adapte si tu veux fr-FR
-      return d.toLocaleDateString("fr-CA", opts);
-    }
-
-    function isSameYMD(a,b){
-      return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
-    }
-
-    function getTuesdaysOfMonth(year, monthIndex){
-      // monthIndex: 0..11
-      const first = new Date(year, monthIndex, 1);
-      const last  = new Date(year, monthIndex + 1, 0);
-      const tuesdays = [];
-
-      // trouver le premier mardi du mois
-      const firstDay = first.getDay();
-      const offset = (2 - firstDay + 7) % 7;
-      let cur = new Date(year, monthIndex, 1 + offset);
-
-      while(cur <= last){
-        tuesdays.push(new Date(cur));
-        cur = addDays(cur, 7);
+      // Airtable renvoie souvent ISO date+heure
+      if (typeof v === "string" && v.includes("T")){
+        const d = new Date(v);
+        if (!isNaN(d)) return d.getHours()*60 + d.getMinutes();
       }
-      return tuesdays;
+
+      // Ou parfois "09:00"
+      const s = String(v).trim().toLowerCase();
+      const m = s.match(/^(\d{1,2}):(\d{2})(am|pm)?$/);
+      if(!m) return null;
+
+      let hh = Number(m[1]);
+      const mm = Number(m[2]);
+      const ampm = m[3];
+
+      if (ampm){
+        if (ampm === "pm" && hh !== 12) hh += 12;
+        if (ampm === "am" && hh === 12) hh = 0;
+      }
+      return hh*60 + mm;
     }
 
-    // ----- Cat mapping (si ton champ Type d’activité contient des valeurs spécifiques) -----
-    function normType(s){
-      return String(s||"").toLowerCase().trim();
+    function minutesToLine(min){
+      // lignes CSS grid 1-based
+      return Math.round((min - START_MIN) / STEP_MIN) + 1;
     }
 
-    function catFromType(type){
-      const t = normType(type);
-      if (t.includes("formation")) return "formation";
+    function toCssType(typeRaw){
+      return (typeRaw || "")
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, "-");
+    }
+
+    function typeToColKey(typeRaw){
+      const t = (typeRaw || "").toLowerCase();
+      if (t.includes("cowork")) return "coworking";
+      if (t.includes("reseau") || t.includes("réseau") || t.includes("reseautage") || t.includes("réseautage")) return "reseautage";
       if (t.includes("atelier")) return "atelier";
-      if (t.includes("webinaire") || t.includes("webinar")) return "webinaire";
       if (t.includes("conseil")) return "conseils";
       return null;
     }
 
-    // ----- Time helpers -----
-    function timeToMin(val){
-      // accepte "HH:MM" ou "H:MM"
-      if(!val) return null;
-      const m = String(val).match(/(\d{1,2}):(\d{2})/);
-      if(!m) return null;
-      const hh = parseInt(m[1],10);
-      const mm = parseInt(m[2],10);
-      return hh*60 + mm;
-    }
+function toYMD(v){
+  if(!v) return "";
+  // Si c'est déjà "YYYY-MM-DD"
+  if (typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+  const d = new Date(v);
+  if (isNaN(d)) return "";
+  return d.toISOString().slice(0,10);
+}
 
-    function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
 
-    function minToTop(min){
-      // Convertit minutes (ex: 9:30=570) en position px
-      const idx = (min - START_MIN) / STEP_MIN;
-      return idx * parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--half'));
-    }
-
-    function durationToHeight(startMin, endMin){
-      const dur = Math.max(STEP_MIN, endMin - startMin);
-      const idx = dur / STEP_MIN;
-      return idx * parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--half')) - 10; // padding visuel
-    }
-
-    // ----- UI builders -----
-    function buildHeader(){
-      const h = $("header");
-      h.innerHTML = "";
-
-      const c0 = document.createElement("div");
-      c0.className = "cell";
-      c0.textContent = "Heure";
-      h.appendChild(c0);
-
-      for(const c of CATEGORIES){
-        const el = document.createElement("div");
-        el.className = "cell";
-        el.textContent = c.label;
-        h.appendChild(el);
-      }
-    }
-
-    function buildBodySkeleton(){
-      const b = $("body");
-      b.innerHTML = "";
-
-      // time column
-      const timeCol = document.createElement("div");
-      timeCol.className = "time-col";
-
-      for(let t = START_MIN; t < END_MIN; t += STEP_MIN){
-        const slot = document.createElement("div");
-        slot.className = "time-slot";
-        // affiche l'heure sur les heures pile seulement
-        if(t % 60 === 0){
-          const hh = Math.floor(t/60);
-          slot.textContent = pad2(hh) + ":00";
-        }else{
-          slot.textContent = "";
-        }
-        timeCol.appendChild(slot);
-      }
-
-      b.appendChild(timeCol);
-
-      // category columns
-      for(const c of CATEGORIES){
-        const col = document.createElement("div");
-        col.className = "cat-col";
-        col.dataset.cat = c.key;
-        b.appendChild(col);
-      }
-    }
-
-    function clearEvents(){
-      for(const col of document.querySelectorAll(".cat-col")){
-        col.querySelectorAll(".event").forEach(e => e.remove());
-      }
-    }
-
-    function setStatus(msg){
-      $("status").textContent = msg || "";
-    }
-
-    // ----- Month (Tuesdays only) UI -----
-    function renderMonthPanel(){
-      const selected = parseYMD($("date").value);
-      const monthTitle = $("monthTitle");
-      monthTitle.textContent = "Mardis — " + fmtMonthTitle(selected);
-
-      const list = $("tuesdayList");
-      list.innerHTML = "";
-
-      const tuesdays = getTuesdaysOfMonth(selected.getFullYear(), selected.getMonth());
-      $("monthHint").textContent = tuesdays.length ? (tuesdays.length + " mardis") : "";
-
-      for(const d of tuesdays){
-        const card = document.createElement("div");
-        card.className = "tue-card" + (isSameYMD(d, selected) ? " is-selected" : "");
-        card.tabIndex = 0;
-
-        const title = document.createElement("div");
-        title.className = "tue-date";
-        // ex: mardi 3 mars 2026
-        title.textContent = fmtHuman(d);
-        card.appendChild(title);
-
-        const meta = document.createElement("div");
-        meta.className = "tue-meta";
-
-        const p1 = document.createElement("span");
-        p1.className = "pill sage";
-        p1.textContent = "Mardi";
-        meta.appendChild(p1);
-
-        const p2 = document.createElement("span");
-        p2.className = "pill";
-        p2.textContent = "Clique pour charger";
-        meta.appendChild(p2);
-
-        card.appendChild(meta);
-
-        const ymd = toYMD(d);
-        card.addEventListener("click", () => setTuesdayAndLoad(ymd));
-        card.addEventListener("keydown", (ev) => {
-          if(ev.key === "Enter" || ev.key === " "){
-            ev.preventDefault();
-            setTuesdayAndLoad(ymd);
-          }
-        });
-
-        list.appendChild(card);
-      }
-    }
-
-    function setTuesdayAndLoad(ymd){
-      // snap + set input
-      const d = snapToTuesday(parseYMD(ymd));
-      const snapped = toYMD(d);
-      $("date").value = snapped;
-      renderMonthPanel();
-      load();
-    }
-
-    // ----- Fetch Airtable via Worker -----
     async function fetchRecords(){
       const dateISO = $("date").value;
       const type = $("filtre").value;
@@ -794,200 +471,186 @@
       let formula = "DATETIME_FORMAT({" + F_DATE + "}, 'YYYY-MM-DD')='" + dateISO + "'";
       if (type) formula = "AND(" + formula + ", {" + F_TYPE + "}='" + type + "')";
 
-      // IMPORTANT: remplace l'URL par ton endpoint Worker
-      const url = new URL("https://flat-credit-0421.lcollard.workers.dev/"); // <-- à remettre comme dans ton code original
+     const url = new URL("https://flat-credit-0421.lcollard.workers.dev/");
+      url.searchParams.set("pageSize","100");
       url.searchParams.set("filterByFormula", formula);
 
-      const res = await fetch(url.toString(), { method:"GET" });
-      if(!res.ok) throw new Error("HTTP " + res.status);
+      const res = await fetch(url.toString());
+
+      if(!res.ok) throw new Error("Airtable API error " + res.status);
       const data = await res.json();
-      return data.records || [];
+      return data.records.map(r => ({ id:r.id, ...r.fields }));
     }
 
-    // ----- Build filter options from records -----
-    function populateFilter(records){
+    function buildTypeOptions(records){
+      const types = new Set();
+      records.forEach(r => r[F_TYPE] && types.add(r[F_TYPE]));
       const sel = $("filtre");
       const current = sel.value;
-      const types = new Set();
+      sel.innerHTML = '<option value="">Tous</option>' +
+        Array.from(types).sort().map(t => '<option>' + t + '</option>').join("");
+      sel.value = current;
+    }
 
-      for(const r of records){
-        const v = r?.fields?.[F_TYPE];
-        if(v) types.add(v);
-      }
+    function render(records){
+      const header = $("header");
+      const body = $("body");
+      header.innerHTML = "";
+      body.innerHTML = "";
 
-      // rebuild options
-      sel.innerHTML = '<option value="">Tous</option>';
-      Array.from(types).sort().forEach(t=>{
-        const opt = document.createElement("option");
-        opt.value = t;
-        opt.textContent = t;
-        sel.appendChild(opt);
+      const categories = [
+        { key:"coworking", label:"Coworking" },
+        { key:"reseautage", label:"Réseautage" },
+        { key:"atelier", label:"Ateliers" },
+        { key:"conseils", label:"Conseils" }
+      ];
+
+      // Header
+      const h0 = document.createElement("div");
+      h0.className = "h";
+      h0.textContent = "";
+      header.appendChild(h0);
+
+      categories.forEach(c => {
+        const h = document.createElement("div");
+        h.className = "h";
+        h.textContent = c.label;
+        header.appendChild(h);
       });
 
-      // restore if still exists
-      const exists = Array.from(sel.options).some(o => o.value === current);
-      sel.value = exists ? current : "";
-    }
+      // Colonne des heures (30 minutes)
+      const timeCol = document.createElement("div");
+      timeCol.className = "time-col";
 
-    // ----- Render events -----
-    function renderEvents(records){
-      clearEvents();
-
-      for(const rec of records){
-        const f = rec.fields || {};
-        const title = f[F_TITLE] || "(Sans titre)";
-        const type = f[F_TYPE] || "";
-        const cat = catFromType(type);
-
-        // si pas de mapping, on ignore (ou on pourrait le mettre dans une colonne par défaut)
-        if(!cat) continue;
-
-        const startMin = timeToMin(f[F_START_TIME]);
-        const endMin   = timeToMin(f[F_END_TIME]);
-
-        if(startMin == null || endMin == null) continue;
-
-        const s = clamp(startMin, START_MIN, END_MIN);
-        const e = clamp(endMin,   START_MIN, END_MIN);
-        if(e <= s) continue;
-
-        const col = document.querySelector('.cat-col[data-cat="'+cat+'"]');
-        if(!col) continue;
-
-        const ev = document.createElement("div");
-        ev.className = "event";
-        ev.dataset.cat = cat;
-
-        const top = minToTop(s) + 8; // padding visuel
-        const height = durationToHeight(s, e);
-
-        ev.style.top = top + "px";
-        ev.style.height = height + "px";
-
-        const t = document.createElement("div");
-        t.className = "t";
-        t.textContent = title;
-        ev.appendChild(t);
-
-        const meta = document.createElement("div");
-        meta.className = "m";
-
-        // libellé horaire
-        const timeLabel = f[F_TIME_LABEL] || (String(f[F_START_TIME]||"") + " – " + String(f[F_END_TIME]||""));
-        const pill1 = document.createElement("span");
-        pill1.className = "pill";
-        pill1.textContent = timeLabel;
-        meta.appendChild(pill1);
-
-        // type
-        if(type){
-          const pill2 = document.createElement("span");
-          pill2.className = "pill coral";
-          pill2.textContent = type;
-          meta.appendChild(pill2);
-        }
-
-        ev.appendChild(meta);
-
-        const tag = document.createElement("div");
-        tag.className = "tag";
-        tag.textContent = "Oriance Agora";
-        ev.appendChild(tag);
-
-        // CTA (si tu as un lien dans tes champs, adapte ici)
-        // Exemple: si tu as f["Lien"] ou f["URL"]
-        const urlField = f["Lien"] || f["URL"] || "";
-        if(urlField){
-          const a = document.createElement("a");
-          a.className = "cta";
-          a.href = urlField;
-          a.target = "_blank";
-          a.rel = "noopener";
-          a.textContent = "Détails";
-          const arrow = document.createElement("span");
-          arrow.className = "arrow";
-          arrow.textContent = "→";
-          a.appendChild(arrow);
-          ev.appendChild(a);
-        }
-
-        col.appendChild(ev);
+      for(let m = START_MIN; m < END_MIN; m += STEP_MIN){
+        const tc = document.createElement("div");
+        tc.className = "time-cell";
+        // Affiche seulement l'heure pleine
+        tc.textContent = (m % 60 === 0) ? minutesToHHMM(m) : "";
+        timeCol.appendChild(tc);
       }
+      body.appendChild(timeCol);
+
+      // Colonnes catégories
+      const cols = {};
+      categories.forEach(c => {
+        const col = document.createElement("div");
+        col.className = "cat-col";
+        body.appendChild(col);
+        cols[c.key] = col;
+      });
+
+      // Normalisation events (minutes)
+      const events = records.map(r => {
+        const title = r[F_TITLE] || "(Sans titre)";
+        const type = r[F_TYPE] || "";
+        const colKey = typeToColKey(type);
+
+        const startMin = parseTimeToMinutes(r[F_START_TIME]);
+        const endMin   = parseTimeToMinutes(r[F_END_TIME]);
+
+        if (!Number.isFinite(startMin) || !Number.isFinite(endMin)) return null;
+        if (endMin <= startMin) return null;
+
+        // clamp dans la grille
+        const s = Math.max(startMin, START_MIN);
+        const e = Math.min(endMin, END_MIN);
+
+        const label = r[F_TIME_LABEL] || (minutesToHHMM(s) + " – " + minutesToHHMM(e));
+        const actionLabel = r["Action"] || "";
+        const actionUrl = r["ActionURL"] || "";
+
+        return { title, type, colKey, s, e, label, actionLabel, actionUrl };
+      }).filter(Boolean);
+
+      // Lanes (chevauchements) PAR CAT
+      const byCat = {};
+      events.forEach(ev => {
+        if(!ev.colKey) return;
+        (byCat[ev.colKey] ||= []).push(ev);
+      });
+
+      Object.keys(byCat).forEach(key => {
+        const list = byCat[key].sort((a,b) => a.s - b.s || a.e - b.e);
+        const lanesEnd = [];
+
+        list.forEach(ev => {
+          let lane = lanesEnd.findIndex(end => end <= ev.s);
+          if(lane === -1){
+            lanesEnd.push(ev.e);
+            lane = lanesEnd.length - 1;
+          }else{
+            lanesEnd[lane] = ev.e;
+          }
+          ev.lane = lane + 1;
+        });
+
+        if (cols[key]) cols[key].style.setProperty("--lanes", String(lanesEnd.length || 1));
+      });
+
+      // Render
+      events.forEach(ev => {
+        const clickable = !!ev.actionUrl && !!ev.actionLabel;
+        const card = document.createElement(clickable ? "a" : "div");
+
+        const typeClass = toCssType(ev.type);
+        card.className = "event type-" + typeClass + (clickable ? "" : " disabled");
+
+        const startLine = minutesToLine(ev.s);
+        const endLine   = minutesToLine(ev.e);
+        card.style.gridRow = startLine + " / " + endLine;
+
+        if (clickable){
+          card.href = ev.actionUrl;
+          card.target = "_blank";
+          card.rel = "noopener noreferrer";
+        }
+
+        card.innerHTML =
+          '<div class="t">' + ev.title + '</div>' +
+          (ev.type ? '<div class="tag">' + ev.type + '</div>' : '') +
+          '<div class="m">' + ev.label + '</div>';
+
+        if (clickable){
+          const cta = document.createElement("div");
+          cta.className = "cta";
+          cta.innerHTML = ev.actionLabel + ' <span class="arrow">→</span>';
+          card.appendChild(cta);
+        }
+
+        // Diner = pleine largeur
+        if ((ev.title || "").trim().toLowerCase() === "diner") {
+          card.classList.add("full");
+        }
+
+        // Catégorie obligatoire
+        if (ev.colKey && cols[ev.colKey]){
+          if (ev.lane) card.style.gridColumn = String(ev.lane);
+          cols[ev.colKey].appendChild(card);
+        }
+      });
     }
 
-    // ----- Main load -----
     async function load(){
+      $("status").textContent = "Chargement…";
       try{
-        setStatus("Chargement…");
         const records = await fetchRecords();
-
-        // Rebuild filter options based on the full set for the chosen day
-        populateFilter(records);
-
-        renderEvents(records);
-
-        const d = parseYMD($("date").value);
-        setStatus("Affiché: " + fmtHuman(d) + " • " + records.length + " enregistrements");
+        buildTypeOptions(records);
+        render(records);
+        $("status").textContent = records.length + " activité(s)";
       }catch(e){
-        setStatus("Erreur: " + e.message);
+        $("status").textContent = "Erreur: " + e.message;
         console.error(e);
       }
     }
 
-    // ----- Navigation handlers -----
-    function gotoPrevTuesday(){
-      const d = snapToTuesday(parseYMD($("date").value));
-      setTuesdayAndLoad(toYMD(addDays(d, -7)));
-    }
-    function gotoNextTuesday(){
-      const d = snapToTuesday(parseYMD($("date").value));
-      setTuesdayAndLoad(toYMD(addDays(d, +7)));
-    }
+    // Par défaut: 3 mars 2026
+    $("date").value = "2026-03-03";
 
-    function gotoPrevMonth(){
-      const d = parseYMD($("date").value);
-      const nd = new Date(d.getFullYear(), d.getMonth()-1, d.getDate());
-      setTuesdayAndLoad(toYMD(snapToTuesday(nd)));
-    }
-    function gotoNextMonth(){
-      const d = parseYMD($("date").value);
-      const nd = new Date(d.getFullYear(), d.getMonth()+1, d.getDate());
-      setTuesdayAndLoad(toYMD(snapToTuesday(nd)));
-    }
+    $("reload").addEventListener("click", load);
+    $("filtre").addEventListener("change", load);
 
-    // ----- Init -----
-    function init(){
-      buildHeader();
-      buildBodySkeleton();
-
-      // Date par défaut: mardi de la semaine en cours (snap)
-      const today = new Date();
-      const tue = snapToTuesday(today);
-      $("date").value = toYMD(tue);
-
-      // Bind
-      $("reload").addEventListener("click", load);
-      $("filtre").addEventListener("change", load);
-
-      $("prevTue").addEventListener("click", gotoPrevTuesday);
-      $("nextTue").addEventListener("click", gotoNextTuesday);
-
-      $("prevMonth").addEventListener("click", gotoPrevMonth);
-      $("nextMonth").addEventListener("click", gotoNextMonth);
-
-      // Si l’utilisateur choisit une date quelconque, on snap au mardi
-      $("date").addEventListener("change", () => {
-        const d = snapToTuesday(parseYMD($("date").value));
-        $("date").value = toYMD(d);
-        renderMonthPanel();
-        load();
-      });
-
-      renderMonthPanel();
-      load();
-    }
-
-    init();
+    load();
   </script>
 </body>
 </html>
