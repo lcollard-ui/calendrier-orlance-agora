@@ -244,112 +244,163 @@
       width:fit-content;
     }
 
-    /* CTA: souligné + flèche */
-    .cta{
-      margin-top:6px;
-      display:inline-flex;
-      align-items:center;
-      gap:4px;
-      font-size:12px;
-      font-weight:800;
+  /* CTA premium */
+.cta{
+  margin-top:8px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-size:12px;
+  font-weight:800;
+  white-space: nowrap;
+  user-select: none;
 
-      background:none !important;
-      box-shadow:none !important;
-      border:none;
-      border-bottom:1px solid var(--tint-black-14);
-      padding:0 0 2px 0;
-      width:fit-content;
-      pointer-events:auto;
+  padding:8px 10px;
+  border-radius:999px;
+  border:1px solid #D0D7E2;
+  background:#FFFFFF;          /* ✅ pas de transparence */
+  width: fit-content;
 
-      white-space: nowrap;
-    }
+  transition: background .12s ease, box-shadow .12s ease, transform .12s ease;
+}
 
-    .cta,
-    .cta:link,
-    .cta:visited,
-    .cta:hover,
-    .cta:active,
-    .cta:focus{
-      background:none !important;
-      box-shadow:none !important;
-      outline:none !important;
-      text-decoration:none;
-    }
+.event:hover .cta{
+  background:#fff;
+  box-shadow: 0 10px 18px rgba(0,0,0,.08);
+  transform: translateY(-1px);
+}
 
-    .arrow{
-      display:inline-block;
-      margin-left:4px;
-      transition: transform .12s ease;
-    }
-    .event:hover .arrow{ transform: translateX(2px); }
+.event:focus-visible{
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(58,93,174,.18);
+}
 
-    /* =========================
-       Couleurs par catégorie (TSLSJ)
-       - Les cartes: tints + barre accent à gauche (cohérent)
-       - Les tags: couleurs différentes (bleu / bleu foncé / gris / mix)
-       ========================= */
+.cta .arrow{
+  margin-left:0;
+  transition: transform .12s ease;
+}
 
-    /* Coworking (bleu) */
-    .type-coworking{
-      background: var(--tint-blue-10);
-      border-color: rgba(58,93,174,.30);
-      box-shadow: inset 4px 0 0 0 var(--tslsj-blue);
-    }
-    .type-coworking .tag{
-      background: var(--tslsj-blue);
-      border-color: rgba(58,93,174,.45);
-      color: #fff;
-    }
-    .type-coworking .cta{ color: var(--tslsj-blue); border-bottom-color: rgba(58,93,174,.45); }
+.event:hover .cta .arrow{
+  transform: translateX(3px);
+}
 
-    /* Réseautage (bleu foncé) */
-    .type-reseautage{
-      background: var(--tint-navy-10);
-      border-color: rgba(27,54,93,.28);
-      box-shadow: inset 4px 0 0 0 var(--tslsj-navy);
-    }
-    .type-reseautage .tag{
-      background: var(--tslsj-navy);
-      border-color: rgba(27,54,93,.45);
-      color: #fff;
-    }
-    .type-reseautage .cta{ color: var(--tslsj-navy); border-bottom-color: rgba(27,54,93,.45); }
-
-    /* Atelier (gris) */
-    .type-atelier{
-      background: var(--tint-black-06);
-      border-color: rgba(0,0,0,.16);
-      box-shadow: inset 4px 0 0 0 var(--tslsj-gray);
-    }
-    .type-atelier .tag{
-      background: var(--tslsj-gray);
-      border-color: rgba(0,0,0,.18);
-      color: #fff;
-    }
-    .type-atelier .cta{ color: var(--tslsj-gray); border-bottom-color: rgba(0,0,0,.18); }
-
-    /* Conseils (mix bleu + foncé pour se distinguer) */
-    .type-conseils{
-      background: var(--tint-blue-10);
-      border-color: rgba(27,54,93,.24);
-      box-shadow: inset 4px 0 0 0 var(--tslsj-navy);
-    }
-    .type-conseils .tag{
-      background: linear-gradient(90deg, var(--tslsj-navy), var(--tslsj-blue));
-      border-color: rgba(27,54,93,.35);
-      color: #fff;
-    }
-    .type-conseils .cta{ color: var(--tslsj-navy); border-bottom-color: rgba(27,54,93,.35); }
-
-    /* Diner pleine largeur */
+          /* Diner pleine largeur */
     .event.full{
-      grid-column: 1 / -1;
+      grid-column: 2 / 6;
       max-width:none;
       pointer-events:auto;
     }
 
     /* Les cartes peuvent scroller si trop de contenu */
     .cat-col .event{ overflow:auto; }
+
+/* =========================
+   Couleurs pleines par colonne
+   ========================= */
+
+/* Coworking */
+.event[data-col="coworking"]{
+  background: #E9F0FF;
+  border-color: #C7D7FF;
+  box-shadow: inset 4px 0 0 0 #3A5DAE;
+}
+.event[data-col="coworking"] .tag{
+  background:#3A5DAE;
+  color:#fff;
+}
+
+/* Réseautage */
+.event[data-col="reseautage"]{
+  background: #E6ECF4;
+  border-color: #C9D6E8;
+  box-shadow: inset 4px 0 0 0 #1B365D;
+}
+.event[data-col="reseautage"] .tag{
+  background:#1B365D;
+  color:#fff;
+}
+
+/* =========================
+   Ateliers – ORANGE
+   ========================= */
+.event[data-col="atelier"]{
+  background: #FFF3E6;            /* orange très pâle */
+  border-color: #F3C18D;
+  box-shadow: inset 4px 0 0 0 #E67E22;
+}
+
+.event[data-col="atelier"] .tag{
+  background: #E67E22;
+  color: #fff;
+}
+
+/* Conseils */
+.event[data-col="conseils"]{
+  background: #E8F7F3;
+  border-color: #BFE5DB;
+  box-shadow: inset 4px 0 0 0 #0F766E;
+}
+.event[data-col="conseils"] .tag{
+  background:#0F766E;
+  color:#fff;
+}
+
+/* Dîner / pause */
+.event.meal{
+  background: #FFFFFF;
+  border-style: dashed;
+  border-color: #CCCCCC;
+  box-shadow: inset 4px 0 0 0 #999999;
+}
+.event.meal .tag{
+  background:#555555;
+  color:#fff;
+}
+
+/* Dîner pleine largeur avec coins arrondis */
+.event.meal.full{
+  margin: 8px !important;
+  padding: 8px 10px;
+  border-left: 0;
+  border-right: 0;
+  left: 0 !important;
+  width: 100% !important;
+}
+
+/* ✅ MOBILE SEULEMENT */
+@media (max-width: 768px){
+
+  /* Le conteneur devient scrollable au doigt */
+  .matrix{
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* La grille garde une largeur lisible (donc elle déborde → scroll) */
+  .matrix-header,
+  .matrix-body{
+    min-width: 1200px; /* ajuste si tu veux plus/moins large */
+  }
+
+  /* Optionnel : densifier un peu */
+  .time-cell{
+    font-size: 12px;
+    padding: 0 6px;
+  }
+  .event{
+    margin: 6px;
+    padding: 8px;
+    min-width: 200px; /* évite l’écrasement des cartes */
+  }
+  .event .t{
+    font-size: 14px;
+    line-height: 1.2;
+  }
+  .cta{
+    font-size: 12px;
+  }
+}
+
   </style>
 </head>
 
@@ -540,28 +591,41 @@ function toYMD(v){
         cols[c.key] = col;
       });
 
-      // Normalisation events (minutes)
-      const events = records.map(r => {
-        const title = r[F_TITLE] || "(Sans titre)";
-        const type = r[F_TYPE] || "";
-        const colKey = typeToColKey(type);
+// Normalisation events (minutes)
+const events = records.map(r => {
+  const title = r[F_TITLE] || "(Sans titre)";
+  const type = r[F_TYPE] || "";
+  const colKey = typeToColKey(type);
 
-        const startMin = parseTimeToMinutes(r[F_START_TIME]);
-        const endMin   = parseTimeToMinutes(r[F_END_TIME]);
+  const startMin = parseTimeToMinutes(r[F_START_TIME]);
+  const endMin   = parseTimeToMinutes(r[F_END_TIME]);
 
-        if (!Number.isFinite(startMin) || !Number.isFinite(endMin)) return null;
-        if (endMin <= startMin) return null;
+  if (!Number.isFinite(startMin) || !Number.isFinite(endMin)) return null;
+  if (endMin <= startMin) return null;
 
-        // clamp dans la grille
-        const s = Math.max(startMin, START_MIN);
-        const e = Math.min(endMin, END_MIN);
+  // clamp dans la grille
+  const s = Math.max(startMin, START_MIN);
+  const e = Math.min(endMin, END_MIN);
 
-        const label = r[F_TIME_LABEL] || (minutesToHHMM(s) + " – " + minutesToHHMM(e));
-        const actionLabel = r["Action"] || "";
-        const actionUrl = r["ActionURL"] || "";
+  const label = r[F_TIME_LABEL] || (minutesToHHMM(s) + " – " + minutesToHHMM(e));
+  const actionLabel = r["Action"] || "";
+  const actionUrl   = r["ActionURL"] || "";
 
-        return { title, type, colKey, s, e, label, actionLabel, actionUrl };
-      }).filter(Boolean);
+  // ✅ ICI (la ligne manquante)
+  const isFullWidth = r["Pleine largeur"] === true;
+
+  return {
+    title,
+    type,
+    colKey,
+    s,
+    e,
+    label,
+    actionLabel,
+    actionUrl,
+    isFullWidth
+  };
+}).filter(Boolean);
 
       // Lanes (chevauchements) PAR CAT
       const byCat = {};
@@ -588,47 +652,69 @@ function toYMD(v){
         if (cols[key]) cols[key].style.setProperty("--lanes", String(lanesEnd.length || 1));
       });
 
-      // Render
-      events.forEach(ev => {
-        const clickable = !!ev.actionUrl && !!ev.actionLabel;
-        const card = document.createElement(clickable ? "a" : "div");
+            // Render
+events.forEach(ev => {
+  const clickable = !!ev.actionUrl && !!ev.actionLabel;
+  const card = document.createElement(clickable ? "a" : "div");
 
-        const typeClass = toCssType(ev.type);
-        card.className = "event type-" + typeClass + (clickable ? "" : " disabled");
+  card.className = "event" + (clickable ? "" : " disabled");
+  card.dataset.col = ev.colKey || "";
 
-        const startLine = minutesToLine(ev.s);
-        const endLine   = minutesToLine(ev.e);
-        card.style.gridRow = startLine + " / " + endLine;
+  const startLine = minutesToLine(ev.s);
+  const endLine   = minutesToLine(ev.e);
+  card.style.gridRow = startLine + " / " + endLine;
 
-        if (clickable){
-          card.href = ev.actionUrl;
-          card.target = "_blank";
-          card.rel = "noopener noreferrer";
-        }
+  if (clickable){
+    card.href = ev.actionUrl;
+    card.target = "_blank";
+    card.rel = "noopener noreferrer";
+  }
 
-        card.innerHTML =
-          '<div class="t">' + ev.title + '</div>' +
-          (ev.type ? '<div class="tag">' + ev.type + '</div>' : '') +
-          '<div class="m">' + ev.label + '</div>';
+  card.innerHTML =
+    '<div class="t">' + ev.title + '</div>' +
+    (ev.type ? '<div class="tag">' + ev.type + '</div>' : '') +
+    '<div class="m">' + ev.label + '</div>';
 
-        if (clickable){
-          const cta = document.createElement("div");
-          cta.className = "cta";
-          cta.innerHTML = ev.actionLabel + ' <span class="arrow">→</span>';
-          card.appendChild(cta);
-        }
+  if (clickable){
+    const cta = document.createElement("span");
+    cta.className = "cta";
+    cta.innerHTML = ev.actionLabel + ' <span class="arrow">→</span>';
+    card.appendChild(cta);
+  }
 
-        // Diner = pleine largeur
-        if ((ev.title || "").trim().toLowerCase() === "diner") {
-          card.classList.add("full");
-        }
+  // ✅ Pleine largeur (ex: dîner / lunch)
+if (ev.isFullWidth) {
+  card.classList.add("full", "meal");
+  card.dataset.col = "";
 
-        // Catégorie obligatoire
-        if (ev.colKey && cols[ev.colKey]){
-          if (ev.lane) card.style.gridColumn = String(ev.lane);
-          cols[ev.colKey].appendChild(card);
-        }
-      });
+  // hauteur d’un slot (30 min) en px
+  const halfPx =
+    parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--half")) || 74;
+
+  // position absolue dans la matrix-body
+card.style.position = "absolute";
+  card.style.margin = "0";
+  card.style.left = "0";  
+  card.style.width = "100%";  
+
+  const topPx = (startLine - 1) * halfPx;
+  const heightPx = (endLine - startLine) * halfPx;
+
+  card.style.top = topPx + "px";
+  card.style.height = Math.max(40, heightPx) + "px";
+  card.style.zIndex = "5";
+
+  body.appendChild(card);
+  return;
+}
+
+
+
+  // Cas normal
+  const targetKey = (ev.colKey && cols[ev.colKey]) ? ev.colKey : "atelier";
+  if (ev.lane) card.style.gridColumn = String(ev.lane);
+  cols[targetKey].appendChild(card);
+});
     }
 
     async function load(){
