@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Calendrier (mardi)</title>
+  <title>Calendrier (jeudi)</title>
 
   <style>
     *{ box-sizing: border-box; }
@@ -24,8 +24,12 @@
       --radius-md: 12px;
       --shadow-sm: 0 2px 10px rgba(0,0,0,.06);
 
-      /* ✅ AUGMENTÉ: 30 minutes = 84px (au lieu de 74px) */
+      /* ✅ 30 minutes = 84px */
       --half: 84px;
+    }
+
+    html, body{
+      height: auto;
     }
 
     body{
@@ -33,6 +37,7 @@
       margin:20px;
       color: var(--tslsj-navy);
       background: linear-gradient(180deg, var(--tint-blue-06), transparent 220px);
+      overflow-x: hidden; /* ✅ aide en iframe */
     }
 
     .muted{ opacity:.75; color: var(--tslsj-gray); }
@@ -210,9 +215,7 @@
       font-weight:900;
       padding: 0 0 6px 0;
     }
-    .dow > span{
-      text-align:center;
-    }
+    .dow > span{ text-align:center; }
 
     .days{
       display:grid;
@@ -243,10 +246,12 @@
     .day:hover{ background: var(--tint-black-03); }
     .day:active{ transform: scale(.98); }
 
-    .day.tue{
+    /* ✅ surlignage du jour cible (jeudi) */
+    .day.target{
       background: var(--tint-blue-06);
       border-color: rgba(58,93,174,.25);
     }
+
     .day.selected{
       background: var(--tslsj-blue);
       color:#fff;
@@ -266,16 +271,10 @@
     @media (max-width: 768px){
       .dateBlock{ width:100%; min-width:0; max-width:none; }
       label{ width:100%; min-width:0; }
-      .monthCal{
-        left: 0;
-        right: 0;
-        width: 100%;
-      }
+      .monthCal{ left: 0; right: 0; width: 100%; }
     }
 
-    .filterBlock{
-      min-width: 280px;
-    }
+    .filterBlock{ min-width: 280px; }
 
     .filterLabel{
       font-size: 12.5px;
@@ -408,10 +407,7 @@
       outline-offset: 2px;
     }
 
-    .event{
-      animation: eventIn .2s ease both;
-    }
-
+    .event{ animation: eventIn .2s ease both; }
     @keyframes eventIn{
       from { opacity:0; transform: translateY(4px); }
       to { opacity:1; transform: translateY(0); }
@@ -432,10 +428,7 @@
       transform: translateY(4px);
       filter: saturate(.95);
     }
-    .matrix.is-transitioning-in{
-      animation: matrixIn .22s ease both;
-    }
-
+    .matrix.is-transitioning-in{ animation: matrixIn .22s ease both; }
     @keyframes matrixIn{
       from { opacity:.72; transform: translateY(5px); }
       to { opacity:1; transform: translateY(0); }
@@ -463,12 +456,10 @@
       padding:12px 10px;
       font-weight:800;
       letter-spacing:.2px;
-
       display:flex;
       align-items:center;
       justify-content:center;
       text-align:center;
-
       border-radius: 12px;
       margin: 6px;
     }
@@ -511,7 +502,6 @@
       display:grid;
       grid-auto-rows: var(--half);
       border-right:1px solid var(--tint-black-10);
-
       grid-template-columns: repeat(var(--lanes, 1), 1fr);
       align-content:start;
       background: #fff;
@@ -545,8 +535,6 @@
       color:inherit;
       transition: filter .12s ease, transform .12s ease, box-shadow .12s ease;
       display:block;
-
-      /* ✅ IMPORTANT: pas de scroll interne */
       overflow: hidden;
     }
 
@@ -563,7 +551,6 @@
       font-weight:800;
       font-size:15px;
       line-height:1.2;
-
       display: -webkit-box;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 4;
@@ -600,13 +587,11 @@
       font-weight:900;
       white-space: nowrap;
       user-select: none;
-
       padding:8px 10px;
       border-radius:999px;
       border:1px solid #D0D7E2;
       background:#FFFFFF;
       width: fit-content;
-
       transition: background .12s ease, box-shadow .12s ease, transform .12s ease;
     }
     .event:hover .cta{
@@ -623,10 +608,6 @@
       max-width:none;
       pointer-events:auto;
     }
-
-    /* ❌ SUPPRIMÉ: cela forçait les scrollbars internes
-       .cat-col .event{ overflow:auto; }
-    */
 
     /* Couleurs par colonne */
     .event[data-col="coworking"]{
@@ -679,12 +660,6 @@
     @media (max-width: 768px){
       .matrix{ overflow-x: auto; -webkit-overflow-scrolling: touch; }
       .matrix-header, .matrix-body{ min-width: 1200px; }
-
-      /* (optionnel) tu peux réduire un peu sur mobile si tu veux:
-         :root{ --half: 78px; } ne marche pas ici; il faudrait le remettre dans un selector,
-         donc je garde simple et stable.
-      */
-
       .time-cell{ font-size: 12px; padding: 0 6px; }
       .event{ margin: 6px; padding: 8px; min-width: 200px; }
       .event .t{ font-size: 14px; line-height: 1.2; }
@@ -699,15 +674,15 @@
       <div class="dateTop">
         <div class="dateTitle">Date</div>
         <div class="navBtns">
-          <button class="nav" id="prevTue" type="button">← Mardi précédent</button>
-          <button class="nav" id="nextTue" type="button">Mardi suivant →</button>
+          <button class="nav" id="prevDay" type="button">← Jeudi précédent</button>
+          <button class="nav" id="nextDay" type="button">Jeudi suivant →</button>
         </div>
       </div>
 
       <input id="date" type="date" class="nativeDate" />
 
       <button class="datePill" id="datePill" type="button" aria-expanded="false">
-        <span class="pillLabel">Mardi sélectionné</span>
+        <span class="pillLabel">Jeudi sélectionné</span>
         <span class="pillValue" id="pillValue"></span>
         <span class="pillChevron" id="pillChevron">▾</span>
       </button>
@@ -733,7 +708,7 @@
         <select id="filtre" class="filterSelect">
           <option value="">Tous</option>
         </select>
-    <span id="status" class="statusPill muted" aria-live="polite" aria-atomic="true">0 activité</span>
+        <span id="status" class="statusPill muted" aria-live="polite" aria-atomic="true">0 activité</span>
       </div>
     </div>
   </div>
@@ -749,11 +724,14 @@
         <div class="emptyModalTitle" id="emptyModalTitle">Aucune activité</div>
         <button type="button" class="emptyModalClose" id="emptyModalClose" aria-label="Fermer">×</button>
       </div>
-      <p class="emptyModalText">Aucune activité pour ce mardi. Choisis un autre mardi ou modifie le filtre.</p>
+      <p class="emptyModalText">Aucune activité pour ce jeudi. Choisis un autre jeudi ou modifie le filtre.</p>
     </div>
   </div>
 
   <script>
+    // ===== Réglage central : jour cible =====
+    const TARGET_DOW = 4; // 4 = jeudi
+
     // Champs Airtable (noms exacts)
     const F_DATE = "Date activité";
     const F_TITLE = "Titre";
@@ -771,7 +749,7 @@
     const END_MIN   = 17*60;
     const STEP_MIN  = 30;
 
-    // ===== Calendrier mensuel custom + navigation mardis =====
+    // ===== Calendrier mensuel custom + navigation jeudis =====
     const MONTHS_FR = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
 
     function ymdToDate(ymd){
@@ -786,28 +764,28 @@
       return `${y}-${m}-${day}`;
     }
 
-    function formatTueFR(ymd){
+    function formatDayFR(ymd){
       const d = ymdToDate(ymd);
       return `${d.getDate()} ${MONTHS_FR[d.getMonth()]} ${d.getFullYear()}`;
     }
 
     function setPill(ymd){
       const pv = $("pillValue");
-      if (pv) pv.textContent = formatTueFR(ymd);
+      if (pv) pv.textContent = formatDayFR(ymd);
     }
 
-    function isTuesday(d){ return d.getDay() === 2; }
+    function isTargetDay(d){ return d.getDay() === TARGET_DOW; }
 
-    function snapToTuesday(d){
+    function snapToTargetDay(d){
       const out = new Date(d);
-      const diff = (2 - out.getDay() + 7) % 7;
+      const diff = (TARGET_DOW - out.getDay() + 7) % 7;
       out.setDate(out.getDate() + diff);
       return out;
     }
 
-    function shiftTuesday(ymd, deltaWeeks){
+    function shiftTargetDay(ymd, deltaWeeks){
       const d = ymdToDate(ymd);
-      const t = isTuesday(d) ? new Date(d) : snapToTuesday(d);
+      const t = isTargetDay(d) ? new Date(d) : snapToTargetDay(d);
       t.setDate(t.getDate() + (deltaWeeks * 7));
       return dateToYMD(t);
     }
@@ -852,14 +830,14 @@
         const ymd = dateToYMD(d);
         const btn = document.createElement("div");
         btn.className = "day";
-        if (d.getDay() === 2) btn.classList.add("tue");
+        if (d.getDay() === TARGET_DOW) btn.classList.add("target");
         if (ymd === selectedYMD) btn.classList.add("selected");
 
         if (!inMonth){
           btn.classList.add("muted");
         } else {
           btn.addEventListener("click", () => {
-            const snapped = snapToTuesday(d);
+            const snapped = snapToTargetDay(d);
             const newYMD = dateToYMD(snapped);
             setSelectedDate(newYMD, true);
 
@@ -888,18 +866,21 @@
       if (shouldLoad) load({ animateSwap: true });
     }
 
-    function getClosestUpcomingTuesdayYMD(baseDate = new Date()){
+    function getClosestUpcomingTargetYMD(baseDate = new Date()){
       const d = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate());
-      const diff = (2 - d.getDay() + 7) % 7;
+      const diff = (TARGET_DOW - d.getDay() + 7) % 7;
       d.setDate(d.getDate() + diff);
       return dateToYMD(d);
     }
 
-    const MIN_START_TUESDAY = "2026-03-03";
+    // ✅ Début "5 avril" : on prend le premier jeudi à partir de cette date
+    // Mets l'année voulue ici si besoin (2026 par défaut vu ton screenshot)
+    const MIN_START_DATE = "2026-03-05";
 
-    function getInitialTuesdayYMD(){
-      const next = getClosestUpcomingTuesdayYMD();
-      return next < MIN_START_TUESDAY ? MIN_START_TUESDAY : next;
+    function getInitialTargetYMD(){
+      const next = getClosestUpcomingTargetYMD();
+      const minSnapped = dateToYMD(snapToTargetDay(ymdToDate(MIN_START_DATE)));
+      return next < minSnapped ? minSnapped : next;
     }
 
     // ===== utilitaires horaires =====
@@ -962,10 +943,6 @@
       if (t.includes("atelier")) return "atelier";
       if (t.includes("conseil")) return "conseils";
       return null;
-    }
-
-    function escAirtableStr(v){
-      return String(v ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
     }
 
     function parseDateToYMD(v){
@@ -1189,6 +1166,9 @@
 
       if (records.length === 0) openEmptyModal();
       else closeEmptyModal();
+
+      // ✅ après rendu, notif iframe
+      notifyParentHeightSoon();
     }
 
     function renderSkeleton(){
@@ -1233,18 +1213,20 @@
         }
         body.appendChild(col);
       }
+
+      notifyParentHeightSoon();
     }
 
-    function wait(ms){
-      return new Promise(resolve => setTimeout(resolve, ms));
-    }
+    function wait(ms){ return new Promise(resolve => setTimeout(resolve, ms)); }
 
     function openEmptyModal(){
       $("emptyModal").classList.add("is-open");
+      notifyParentHeightSoon();
     }
 
     function closeEmptyModal(){
       $("emptyModal").classList.remove("is-open");
+      notifyParentHeightSoon();
     }
 
     async function animateGridSwap(){
@@ -1259,6 +1241,7 @@
       grid.classList.remove("is-transitioning-out");
       grid.classList.add("is-transitioning-in");
       setTimeout(() => grid.classList.remove("is-transitioning-in"), 240);
+      notifyParentHeightSoon();
     }
 
     async function load(opts = {}){
@@ -1282,15 +1265,43 @@
       }
     }
 
-    // ===== Brancher les interactions (UNE SEULE FOIS) =====
+    // ===== IFRAME : envoyer hauteur au parent =====
+    let heightTimer = null;
+
+    function notifyParentHeight(){
+      // La hauteur "réelle" la plus fiable en embed
+      const h = Math.max(
+        document.documentElement.scrollHeight,
+        document.body.scrollHeight,
+        document.documentElement.offsetHeight,
+        document.body.offsetHeight
+      );
+
+      // Si la page n'est pas dans un iframe, ça ne dérange pas
+      try{
+        if (window.parent && window.parent !== window){
+          window.parent.postMessage({ type: "oriance-qg-height", height: h }, "*");
+        }
+      }catch(_e){}
+    }
+
+    function notifyParentHeightSoon(){
+      // debounce léger
+      clearTimeout(heightTimer);
+      heightTimer = setTimeout(notifyParentHeight, 80);
+    }
+
+    window.addEventListener("resize", notifyParentHeightSoon);
+
+    // ===== Brancher les interactions =====
     $("filtre").addEventListener("change", () => load({ animateSwap: true }));
 
-    $("prevTue").addEventListener("click", () => {
-      setSelectedDate(shiftTuesday($("date").value, -1), true);
+    $("prevDay").addEventListener("click", () => {
+      setSelectedDate(shiftTargetDay($("date").value, -1), true);
     });
 
-    $("nextTue").addEventListener("click", () => {
-      setSelectedDate(shiftTuesday($("date").value, +1), true);
+    $("nextDay").addEventListener("click", () => {
+      setSelectedDate(shiftTargetDay($("date").value, +1), true);
     });
 
     $("prevMonth").addEventListener("click", () => {
@@ -1316,6 +1327,7 @@
       $("pillChevron").textContent = !isOpen ? "▴" : "▾";
 
       if (!isOpen) renderMonthCal($("date").value);
+      notifyParentHeightSoon();
     });
 
     document.addEventListener("click", (e) => {
@@ -1328,6 +1340,7 @@
         cal.classList.add("is-collapsed");
         pill.setAttribute("aria-expanded", "false");
         $("pillChevron").textContent = "▾";
+        notifyParentHeightSoon();
       }
     });
 
@@ -1343,6 +1356,7 @@
       cal.classList.add("is-collapsed");
       $("datePill").setAttribute("aria-expanded", "false");
       $("pillChevron").textContent = "▾";
+      notifyParentHeightSoon();
     });
 
     $("emptyModalClose").addEventListener("click", closeEmptyModal);
@@ -1356,17 +1370,18 @@
       if (tag === "input" || tag === "select" || tag === "textarea") return;
       if (e.key === "ArrowLeft"){
         e.preventDefault();
-        setSelectedDate(shiftTuesday($("date").value, -1), true);
+        setSelectedDate(shiftTargetDay($("date").value, -1), true);
       }
       if (e.key === "ArrowRight"){
         e.preventDefault();
-        setSelectedDate(shiftTuesday($("date").value, +1), true);
+        setSelectedDate(shiftTargetDay($("date").value, +1), true);
       }
     });
 
     // Init
-    setSelectedDate(getInitialTuesdayYMD(), false);
+    setSelectedDate(getInitialTargetYMD(), false);
     load({ withSkeleton: true });
+    notifyParentHeightSoon();
   </script>
 </body>
 </html>
