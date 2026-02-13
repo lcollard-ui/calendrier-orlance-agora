@@ -24,7 +24,8 @@
       --radius-md: 12px;
       --shadow-sm: 0 2px 10px rgba(0,0,0,.06);
 
-      --half: 74px; /* 30 minutes */
+      /* ✅ AUGMENTÉ: 30 minutes = 84px (au lieu de 74px) */
+      --half: 84px;
     }
 
     body{
@@ -93,6 +94,7 @@
       gap:10px;
       min-width: 320px;
       max-width: 360px;
+      position: relative;
     }
 
     .dateTop{
@@ -152,14 +154,29 @@
 
     /* mini calendrier */
     .monthCal{
+      position:absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      width: 100%;
       border:1px solid var(--tint-black-10);
       border-radius: 16px;
       background:#fff;
       box-shadow: var(--shadow-sm);
       padding: 12px;
+      z-index: 40;
+      opacity: 0;
+      transform: translateY(-6px) scale(.985);
+      transform-origin: top left;
+      pointer-events: none;
+      transition: opacity .16s ease, transform .16s ease;
     }
     .monthCal.is-collapsed{ display:none; }
-    .monthCal.is-open{ display:block; }
+    .monthCal.is-open{
+      display:block;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
 
     .monthHead{
       display:flex;
@@ -191,7 +208,10 @@
       font-size:10px;
       color: var(--tslsj-gray);
       font-weight:900;
-      padding: 0 2px 6px 2px;
+      padding: 0 0 6px 0;
+    }
+    .dow > span{
+      text-align:center;
     }
 
     .days{
@@ -201,6 +221,7 @@
     }
 
     .day{
+      width:100%;
       height:34px;
       border-radius: 12px;
       border:1px solid transparent;
@@ -208,15 +229,19 @@
       align-items:center;
       justify-content:center;
       font-weight:900;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
       color: var(--tslsj-navy);
       background: #fff;
       cursor:pointer;
       user-select:none;
       position:relative;
       font-size: 13px;
+      transition: background .12s ease, transform .12s ease, box-shadow .12s ease;
     }
     .day.muted{ opacity:.35; cursor: default; }
     .day:hover{ background: var(--tint-black-03); }
+    .day:active{ transform: scale(.98); }
 
     .day.tue{
       background: var(--tint-blue-06);
@@ -241,6 +266,155 @@
     @media (max-width: 768px){
       .dateBlock{ width:100%; min-width:0; max-width:none; }
       label{ width:100%; min-width:0; }
+      .monthCal{
+        left: 0;
+        right: 0;
+        width: 100%;
+      }
+    }
+
+    .filterBlock{
+      min-width: 280px;
+    }
+
+    .filterLabel{
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--tslsj-navy);
+      margin-bottom: 6px;
+    }
+
+    .filterRow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-height: 44px;
+    }
+
+    .filterSelect{
+      min-width: 220px;
+      border-radius: 14px;
+      border: 1px solid rgba(58,93,174,.25);
+      background:
+        linear-gradient(#fff, #fff) padding-box,
+        linear-gradient(135deg, rgba(58,93,174,.35), rgba(27,54,93,.35)) border-box;
+      box-shadow: 0 6px 18px rgba(58,93,174,.08);
+      font-weight: 600;
+    }
+
+    .statusPill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width: 130px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(27,54,93,.16);
+      background: rgba(58,93,174,.06);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--tslsj-navy);
+      white-space: nowrap;
+    }
+    .statusPill[aria-busy="true"]{
+      background: linear-gradient(
+        90deg,
+        rgba(58,93,174,.08) 0%,
+        rgba(58,93,174,.18) 50%,
+        rgba(58,93,174,.08) 100%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.2s linear infinite;
+    }
+
+    @keyframes shimmer{
+      from { background-position: 200% 0; }
+      to { background-position: -200% 0; }
+    }
+
+    .skeleton{
+      border-radius: 10px;
+      background: linear-gradient(
+        90deg,
+        rgba(27,54,93,.06) 0%,
+        rgba(27,54,93,.12) 50%,
+        rgba(27,54,93,.06) 100%
+      );
+      background-size: 220% 100%;
+      animation: shimmer 1.2s linear infinite;
+    }
+
+    .emptyModal{
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 120;
+      background: rgba(14, 24, 44, .46);
+      backdrop-filter: blur(2px);
+      padding: 20px;
+    }
+    .emptyModal.is-open{ display:flex; }
+
+    .emptyModalCard{
+      width: min(560px, 100%);
+      border-radius: 18px;
+      border: 1px solid rgba(27,54,93,.16);
+      background: #fff;
+      box-shadow: 0 24px 60px rgba(0,0,0,.20);
+      padding: 18px 18px 16px 18px;
+      color: var(--tslsj-navy);
+    }
+    .emptyModalTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 8px;
+    }
+    .emptyModalTitle{
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing:.2px;
+    }
+    .emptyModalClose{
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 1px solid rgba(27,54,93,.2);
+      background:#fff;
+      color: var(--tslsj-navy);
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      font-weight: 700;
+      padding: 0;
+    }
+    .emptyModalText{
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.5;
+      font-weight: 500;
+      color: rgba(27,54,93,.9);
+    }
+
+    button:focus-visible,
+    select:focus-visible,
+    .datePill:focus-visible,
+    .iconBtn:focus-visible,
+    .day:focus-visible{
+      outline: 3px solid rgba(58,93,174,.3);
+      outline-offset: 2px;
+    }
+
+    .event{
+      animation: eventIn .2s ease both;
+    }
+
+    @keyframes eventIn{
+      from { opacity:0; transform: translateY(4px); }
+      to { opacity:1; transform: translateY(0); }
     }
 
     /* ===== Matrice ===== */
@@ -250,6 +424,32 @@
       overflow:hidden;
       background:#fff;
       box-shadow: var(--shadow-sm);
+      transition: opacity .18s ease, transform .18s ease, filter .18s ease;
+      will-change: opacity, transform;
+    }
+    .matrix.is-transitioning-out{
+      opacity:.62;
+      transform: translateY(4px);
+      filter: saturate(.95);
+    }
+    .matrix.is-transitioning-in{
+      animation: matrixIn .22s ease both;
+    }
+
+    @keyframes matrixIn{
+      from { opacity:.72; transform: translateY(5px); }
+      to { opacity:1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .monthCal,
+      .matrix,
+      .event,
+      .statusPill[aria-busy="true"],
+      .skeleton{
+        animation: none !important;
+        transition: none !important;
+      }
     }
 
     .matrix-header{
@@ -345,7 +545,9 @@
       color:inherit;
       transition: filter .12s ease, transform .12s ease, box-shadow .12s ease;
       display:block;
-      overflow:hidden;
+
+      /* ✅ IMPORTANT: pas de scroll interne */
+      overflow: hidden;
     }
 
     .event:hover{
@@ -422,7 +624,9 @@
       pointer-events:auto;
     }
 
-    .cat-col .event{ overflow:auto; }
+    /* ❌ SUPPRIMÉ: cela forçait les scrollbars internes
+       .cat-col .event{ overflow:auto; }
+    */
 
     /* Couleurs par colonne */
     .event[data-col="coworking"]{
@@ -476,6 +680,11 @@
       .matrix{ overflow-x: auto; -webkit-overflow-scrolling: touch; }
       .matrix-header, .matrix-body{ min-width: 1200px; }
 
+      /* (optionnel) tu peux réduire un peu sur mobile si tu veux:
+         :root{ --half: 78px; } ne marche pas ici; il faudrait le remettre dans un selector,
+         donc je garde simple et stable.
+      */
+
       .time-cell{ font-size: 12px; padding: 0 6px; }
       .event{ margin: 6px; padding: 8px; min-width: 200px; }
       .event .t{ font-size: 14px; line-height: 1.2; }
@@ -518,18 +727,30 @@
       </div>
     </div>
 
-    <label>Filtre:
-      <select id="filtre">
-        <option value="">Tous</option>
-      </select>
-    </label>
-
-    <span class="muted" id="status"></span>
+    <div class="filterBlock">
+      <div class="filterLabel">Filtre:</div>
+      <div class="filterRow">
+        <select id="filtre" class="filterSelect">
+          <option value="">Tous</option>
+        </select>
+    <span id="status" class="statusPill muted" aria-live="polite" aria-atomic="true">0 activité</span>
+      </div>
+    </div>
   </div>
 
   <div class="matrix" id="grid">
     <div class="matrix-header" id="header"></div>
     <div class="matrix-body" id="body"></div>
+  </div>
+
+  <div class="emptyModal" id="emptyModal" role="dialog" aria-modal="true" aria-labelledby="emptyModalTitle">
+    <div class="emptyModalCard">
+      <div class="emptyModalTop">
+        <div class="emptyModalTitle" id="emptyModalTitle">Aucune activité</div>
+        <button type="button" class="emptyModalClose" id="emptyModalClose" aria-label="Fermer">×</button>
+      </div>
+      <p class="emptyModalText">Aucune activité pour ce mardi. Choisis un autre mardi ou modifie le filtre.</p>
+    </div>
   </div>
 
   <script>
@@ -539,6 +760,8 @@
     const F_TYPE = "Type d’activité";
     const F_START_TIME = "Heure début";
     const F_END_TIME   = "Heure fin";
+    const F_START_TIME_TXT = "HeureDebut_txt";
+    const F_END_TIME_TXT   = "HeureFin_txt";
     const F_TIME_LABEL = "Heure_affichage";
 
     const $ = (id) => document.getElementById(id);
@@ -662,7 +885,21 @@
       calMonthCursor = new Date(d.getFullYear(), d.getMonth(), 1);
 
       renderMonthCal(ymd);
-      if (shouldLoad) load();
+      if (shouldLoad) load({ animateSwap: true });
+    }
+
+    function getClosestUpcomingTuesdayYMD(baseDate = new Date()){
+      const d = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate());
+      const diff = (2 - d.getDay() + 7) % 7;
+      d.setDate(d.getDate() + diff);
+      return dateToYMD(d);
+    }
+
+    const MIN_START_TUESDAY = "2026-03-03";
+
+    function getInitialTuesdayYMD(){
+      const next = getClosestUpcomingTuesdayYMD();
+      return next < MIN_START_TUESDAY ? MIN_START_TUESDAY : next;
     }
 
     // ===== utilitaires horaires =====
@@ -675,14 +912,28 @@
 
     function parseTimeToMinutes(v){
       if(!v) return null;
+      if (typeof v === "number" && Number.isFinite(v)) return v;
 
-      if (typeof v === "string" && v.includes("T")){
-        const d = new Date(v);
+      const s = String(v).trim();
+      const timeInside = s.match(/(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+      if (timeInside){
+        let hh = Number(timeInside[1]);
+        const mm = Number(timeInside[2]);
+        const ampm = (timeInside[3] || "").toLowerCase();
+        if (ampm){
+          if (ampm === "pm" && hh !== 12) hh += 12;
+          if (ampm === "am" && hh === 12) hh = 0;
+        }
+        return hh*60 + mm;
+      }
+
+      if (s.includes("T")){
+        const d = new Date(s);
         if (!isNaN(d)) return d.getHours()*60 + d.getMinutes();
       }
 
-      const s = String(v).trim().toLowerCase();
-      const m = s.match(/^(\d{1,2}):(\d{2})(am|pm)?$/);
+      const normalized = s.toLowerCase();
+      const m = normalized.match(/^(\d{1,2}):(\d{2})(am|pm)?$/);
       if(!m) return null;
 
       let hh = Number(m[1]);
@@ -697,15 +948,12 @@
     }
 
     function minutesToStartLine(min){
-  // start: on "floor" pour ne jamais démarrer trop bas
-  return Math.floor((min - START_MIN) / STEP_MIN) + 1;
-}
+      return Math.floor((min - START_MIN) / STEP_MIN) + 1;
+    }
 
-function minutesToEndLine(min){
-  // end: on "ceil" pour ne jamais couper trop court
-  return Math.ceil((min - START_MIN) / STEP_MIN) + 1;
-}
-
+    function minutesToEndLine(min){
+      return Math.ceil((min - START_MIN) / STEP_MIN) + 1;
+    }
 
     function typeToColKey(typeRaw){
       const t = (typeRaw || "").toLowerCase();
@@ -716,21 +964,58 @@ function minutesToEndLine(min){
       return null;
     }
 
+    function escAirtableStr(v){
+      return String(v ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+    }
+
+    function parseDateToYMD(v){
+      if (!v) return "";
+      if (v instanceof Date && !isNaN(v)) return dateToYMD(v);
+
+      const s = String(v).trim();
+      if (!s) return "";
+
+      const isoDate = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (isoDate) return `${isoDate[1]}-${isoDate[2]}-${isoDate[3]}`;
+
+      const frDate = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+.*)?$/);
+      if (frDate){
+        const d = String(Number(frDate[1])).padStart(2, "0");
+        const m = String(Number(frDate[2])).padStart(2, "0");
+        const y = frDate[3];
+        return `${y}-${m}-${d}`;
+      }
+
+      const dt = new Date(s);
+      if (!isNaN(dt)) return dateToYMD(dt);
+      return "";
+    }
+
     async function fetchRecords(){
       const dateISO = $("date").value;
       const type = $("filtre").value;
+      const all = [];
+      let offset = "";
 
-      let formula = "DATETIME_FORMAT({" + F_DATE + "}, 'YYYY-MM-DD')='" + dateISO + "'";
-      if (type) formula = "AND(" + formula + ", {" + F_TYPE + "}='" + type + "')";
+      do{
+        const url = new URL("https://flat-credit-0421.lcollard.workers.dev/");
+        url.searchParams.set("pageSize","100");
+        if (offset) url.searchParams.set("offset", offset);
 
-      const url = new URL("https://flat-credit-0421.lcollard.workers.dev/");
-      url.searchParams.set("pageSize","100");
-      url.searchParams.set("filterByFormula", formula);
+        const res = await fetch(url.toString());
+        if(!res.ok) throw new Error("Airtable API error " + res.status);
+        const data = await res.json();
+        const chunk = (data.records || []).map(r => ({ id:r.id, ...r.fields }));
+        all.push(...chunk);
+        offset = data.offset || "";
+      } while (offset);
 
-      const res = await fetch(url.toString());
-      if(!res.ok) throw new Error("Airtable API error " + res.status);
-      const data = await res.json();
-      return data.records.map(r => ({ id:r.id, ...r.fields }));
+      return all.filter(r => {
+        const recDate = parseDateToYMD(r[F_DATE]);
+        const dateMatch = recDate === dateISO;
+        const typeMatch = !type || (r[F_TYPE] || "") === type;
+        return dateMatch && typeMatch;
+      });
     }
 
     function buildTypeOptions(records){
@@ -743,7 +1028,7 @@ function minutesToEndLine(min){
         '<option value="">Tous</option>' +
         Array.from(types).sort().map(t => '<option>' + t + '</option>').join("");
 
-      sel.value = current;
+      sel.value = Array.from(types).includes(current) ? current : "";
     }
 
     function render(records){
@@ -795,8 +1080,8 @@ function minutesToEndLine(min){
         const type = r[F_TYPE] || "";
         const colKey = typeToColKey(type);
 
-        const startMin = parseTimeToMinutes(r[F_START_TIME]);
-        const endMin   = parseTimeToMinutes(r[F_END_TIME]);
+        const startMin = parseTimeToMinutes(r[F_START_TIME_TXT] || r[F_START_TIME]);
+        const endMin   = parseTimeToMinutes(r[F_END_TIME_TXT] || r[F_END_TIME]);
 
         if (!Number.isFinite(startMin) || !Number.isFinite(endMin)) return null;
         if (endMin <= startMin) return null;
@@ -836,6 +1121,8 @@ function minutesToEndLine(min){
         if (cols[key]) cols[key].style.setProperty("--lanes", String(lanesEnd.length || 1));
       });
 
+      const staggerByCol = { coworking: 0, reseautage: 0, atelier: 0, conseils: 0, full: 0 };
+
       events.forEach(ev => {
         const clickable = !!ev.actionUrl && !!ev.actionLabel;
         const card = document.createElement(clickable ? "a" : "div");
@@ -844,9 +1131,8 @@ function minutesToEndLine(min){
         card.dataset.col = ev.colKey || "";
 
         const startLine = minutesToStartLine(ev.s);
-const endLine   = minutesToEndLine(ev.e);
-card.style.gridRow = startLine + " / " + endLine;
-
+        const endLine   = minutesToEndLine(ev.e);
+        card.style.gridRow = startLine + " / " + endLine;
 
         if (clickable){
           card.href = ev.actionUrl;
@@ -868,11 +1154,13 @@ card.style.gridRow = startLine + " / " + endLine;
 
         // ✅ Pleine largeur (ex: dîner / lunch)
         if (ev.isFullWidth) {
+          const idx = staggerByCol.full++;
+          card.style.animationDelay = (Math.min(idx, 8) * 22) + "ms";
           card.classList.add("full", "meal");
           card.dataset.col = "";
 
           const halfPx =
-            parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--half")) || 74;
+            parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--half")) || 84;
 
           card.style.position = "absolute";
           card.style.margin = "0";
@@ -882,8 +1170,7 @@ card.style.gridRow = startLine + " / " + endLine;
           const topPx = (startLine - 1) * halfPx;
           const heightPx = (endLine - startLine) * halfPx;
 
-          // ✅ AJUSTEMENT : espace visuel (pour ne pas coller aux blocs PM)
-          const vGap = 12; // mets 8, 12 ou 16 selon ton goût
+          const vGap = 12;
           card.style.top = (topPx + vGap/2) + "px";
           card.style.height = Math.max(40, heightPx - vGap) + "px";
 
@@ -894,26 +1181,109 @@ card.style.gridRow = startLine + " / " + endLine;
         }
 
         const targetKey = (ev.colKey && cols[ev.colKey]) ? ev.colKey : "atelier";
+        const idx = staggerByCol[targetKey]++;
+        card.style.animationDelay = (Math.min(idx, 10) * 26) + "ms";
         if (ev.lane) card.style.gridColumn = String(ev.lane);
         cols[targetKey].appendChild(card);
       });
+
+      if (records.length === 0) openEmptyModal();
+      else closeEmptyModal();
     }
 
-    async function load(){
+    function renderSkeleton(){
+      const header = $("header");
+      const body = $("body");
+
+      header.innerHTML = "";
+      body.innerHTML = "";
+      closeEmptyModal();
+
+      const h0 = document.createElement("div");
+      h0.className = "h";
+      header.appendChild(h0);
+      for (let i = 0; i < 4; i++){
+        const h = document.createElement("div");
+        h.className = "h";
+        h.innerHTML = '<div class="skeleton" style="height:36px;width:100%;border-radius:12px;"></div>';
+        header.appendChild(h);
+      }
+
+      const timeCol = document.createElement("div");
+      timeCol.className = "time-col";
+      for(let m = START_MIN; m < END_MIN; m += STEP_MIN){
+        const tc = document.createElement("div");
+        tc.className = "time-cell";
+        tc.innerHTML = '<div class="skeleton" style="height:10px;width:60px;"></div>';
+        timeCol.appendChild(tc);
+      }
+      body.appendChild(timeCol);
+
+      for (let c = 0; c < 4; c++){
+        const col = document.createElement("div");
+        col.className = "cat-col";
+        for(let r = START_MIN; r < END_MIN; r += STEP_MIN){
+          const sk = document.createElement("div");
+          sk.style.gridColumn = "1";
+          sk.style.gridRow = String(Math.floor((r - START_MIN) / STEP_MIN) + 1);
+          sk.style.margin = "8px";
+          sk.style.height = "58px";
+          sk.className = "skeleton";
+          col.appendChild(sk);
+        }
+        body.appendChild(col);
+      }
+    }
+
+    function wait(ms){
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function openEmptyModal(){
+      $("emptyModal").classList.add("is-open");
+    }
+
+    function closeEmptyModal(){
+      $("emptyModal").classList.remove("is-open");
+    }
+
+    async function animateGridSwap(){
+      const grid = $("grid");
+      grid.classList.remove("is-transitioning-in");
+      grid.classList.add("is-transitioning-out");
+      await wait(110);
+    }
+
+    function finishGridSwap(){
+      const grid = $("grid");
+      grid.classList.remove("is-transitioning-out");
+      grid.classList.add("is-transitioning-in");
+      setTimeout(() => grid.classList.remove("is-transitioning-in"), 240);
+    }
+
+    async function load(opts = {}){
+      const { withSkeleton = false, animateSwap = false } = opts;
+      $("status").setAttribute("aria-busy", "true");
       $("status").textContent = "Chargement…";
+      if (animateSwap) await animateGridSwap();
+      if (withSkeleton) renderSkeleton();
       try{
         const records = await fetchRecords();
         buildTypeOptions(records);
         render(records);
-        $("status").textContent = records.length + " activité(s)";
+        const n = records.length;
+        $("status").textContent = n + " activité" + (n > 1 ? "s" : "");
       }catch(e){
-        $("status").textContent = "Erreur: " + e.message;
+        $("status").textContent = "Erreur";
         console.error(e);
+      } finally {
+        $("status").setAttribute("aria-busy", "false");
+        if (animateSwap) finishGridSwap();
       }
     }
 
     // ===== Brancher les interactions (UNE SEULE FOIS) =====
-    $("filtre").addEventListener("change", load);
+    $("filtre").addEventListener("change", () => load({ animateSwap: true }));
 
     $("prevTue").addEventListener("click", () => {
       setSelectedDate(shiftTuesday($("date").value, -1), true);
@@ -948,9 +1318,55 @@ card.style.gridRow = startLine + " / " + endLine;
       if (!isOpen) renderMonthCal($("date").value);
     });
 
+    document.addEventListener("click", (e) => {
+      const cal = $("monthCal");
+      const pill = $("datePill");
+      const block = document.querySelector(".dateBlock");
+      if (!cal.classList.contains("is-open")) return;
+      if (block && !block.contains(e.target)){
+        cal.classList.remove("is-open");
+        cal.classList.add("is-collapsed");
+        pill.setAttribute("aria-expanded", "false");
+        $("pillChevron").textContent = "▾";
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      if ($("emptyModal").classList.contains("is-open")){
+        closeEmptyModal();
+        return;
+      }
+      const cal = $("monthCal");
+      if (!cal.classList.contains("is-open")) return;
+      cal.classList.remove("is-open");
+      cal.classList.add("is-collapsed");
+      $("datePill").setAttribute("aria-expanded", "false");
+      $("pillChevron").textContent = "▾";
+    });
+
+    $("emptyModalClose").addEventListener("click", closeEmptyModal);
+    $("emptyModal").addEventListener("click", (e) => {
+      if (e.target === $("emptyModal")) closeEmptyModal();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      const t = e.target;
+      const tag = t && t.tagName ? t.tagName.toLowerCase() : "";
+      if (tag === "input" || tag === "select" || tag === "textarea") return;
+      if (e.key === "ArrowLeft"){
+        e.preventDefault();
+        setSelectedDate(shiftTuesday($("date").value, -1), true);
+      }
+      if (e.key === "ArrowRight"){
+        e.preventDefault();
+        setSelectedDate(shiftTuesday($("date").value, +1), true);
+      }
+    });
+
     // Init
-    setSelectedDate("2026-03-03", false);
-    load();
+    setSelectedDate(getInitialTuesdayYMD(), false);
+    load({ withSkeleton: true });
   </script>
 </body>
 </html>
