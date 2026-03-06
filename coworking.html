@@ -1,0 +1,1132 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RDV ORIANCE | Coworking</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap');
+    * { box-sizing: border-box; }
+    :root{
+      --bg:#f4f7fc;
+      --ink:#1b365d;
+      --muted:#6082bd;
+      --line:rgba(27,54,93,.14);
+      --brand:#324f97;
+      --brand-2:#3b64a9;
+      --brand-soft:#85a2d5;
+      --ok:#718e5d;
+      --ok-dark:#546c51;
+      --warn:#d08446;
+      --warn-soft:#f2bb61;
+      --danger:#9b4426;
+      --card:#ffffff;
+      --radius:18px;
+    }
+    body{
+      margin:0;
+      font-family:'Manrope', system-ui, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 400px at 80% -10%, rgba(46,93,183,.2), transparent 58%),
+        radial-gradient(900px 300px at 10% 0%, rgba(20,143,99,.16), transparent 52%),
+        var(--bg);
+    }
+    .wrap{
+      width:min(1280px, calc(100% - 28px));
+      margin:22px auto 34px;
+    }
+    .hero{
+      background:linear-gradient(130deg, #ffffff, #edf2fb 45%, #f7efe7 100%);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:24px;
+      box-shadow:0 22px 34px rgba(16,40,80,.08);
+    }
+    .heroTop{
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+      align-items:flex-start;
+    }
+    h1{
+      margin:0 0 6px;
+      font-size:clamp(28px, 4vw, 44px);
+      line-height:1.02;
+      letter-spacing:-.02em;
+      font-family:'Poppins', 'Manrope', system-ui, sans-serif;
+      font-weight:800;
+    }
+    .sub{
+      margin:0;
+      color:var(--muted);
+      font-size:15px;
+      max-width:740px;
+    }
+    .sync{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:10px 14px;
+      font-size:13px;
+      font-weight:700;
+      white-space:nowrap;
+    }
+    .lastRealSync{
+      margin-top:8px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+    }
+    .lastRealSync::before{
+      content:"";
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:#12a150;
+      box-shadow:0 0 0 4px rgba(18,161,80,.14);
+    }
+    .mobileFilterToggle{
+      display:none;
+      margin-top:10px;
+      height:40px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--ink);
+      font-weight:800;
+      padding:0 12px;
+      cursor:pointer;
+    }
+    .stats{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns:repeat(4,minmax(140px,1fr));
+      gap:10px;
+    }
+    .stat{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+    }
+    .stat strong{
+      display:block;
+      font-size:24px;
+      letter-spacing:-.02em;
+    }
+    .stat span{ color:var(--muted); font-size:13px; font-weight:700; }
+    .toolbar{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns:1.4fr 1fr 1fr auto;
+      gap:10px;
+      align-items:end;
+    }
+    .field label{
+      display:block;
+      margin:0 0 6px;
+      font-size:12px;
+      font-weight:800;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+    .input{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:#fff;
+      height:44px;
+      padding:0 12px;
+      color:var(--ink);
+      font-weight:700;
+      font-size:14px;
+    }
+    .cta{
+      height:44px;
+      padding:0 14px;
+      border:0;
+      border-radius:12px;
+      background:linear-gradient(135deg,var(--brand),var(--brand-2));
+      color:#fff;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .grid{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:14px;
+    }
+    .room{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      overflow:hidden;
+      background:#fff;
+      box-shadow:0 16px 24px rgba(10,30,58,.07);
+      display:flex;
+      flex-direction:column;
+      min-height:385px;
+      transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease;
+    }
+    .room.status-bump{
+      animation: roomStatusBump .55s ease;
+      border-color: rgba(50,79,151,.42);
+      box-shadow:0 0 0 2px rgba(50,79,151,.12), 0 16px 24px rgba(10,30,58,.07);
+    }
+    .cover{
+      height:170px;
+      position:relative;
+      overflow:hidden;
+      background:#dde7f5;
+    }
+    .cover.is-loading::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(100deg, rgba(255,255,255,0) 22%, rgba(255,255,255,.52) 50%, rgba(255,255,255,0) 78%);
+      animation: shimmer 1.15s linear infinite;
+      z-index:0;
+    }
+    .coverMain{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      cursor:zoom-in;
+      position:relative;
+      z-index:0;
+      opacity:1;
+      transition:opacity .22s ease;
+    }
+    .cover.is-loading .coverMain{ opacity:.02; }
+    .cover::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(to top, rgba(0,0,0,.46), rgba(0,0,0,.05));
+      pointer-events:none;
+    }
+    .badge{
+      position:absolute;
+      z-index:1;
+      right:10px;
+      top:10px;
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:12px;
+      font-weight:900;
+      color:#fff;
+      border:1px solid rgba(255,255,255,.5);
+      backdrop-filter: blur(4px);
+      pointer-events:none;
+    }
+    .ok{ background:rgba(20,143,99,.85); }
+    .warn{ background:rgba(217,119,6,.85); }
+    .danger{ background:rgba(192,57,43,.9); }
+    .name{
+      position:absolute;
+      z-index:1;
+      left:12px;
+      bottom:12px;
+      color:#fff;
+      font-size:20px;
+      line-height:1;
+      font-weight:800;
+      text-shadow:0 2px 8px rgba(0,0,0,.4);
+      pointer-events:none;
+    }
+    .thumbRow{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:6px;
+      margin-top:8px;
+    }
+    .thumb{
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:0;
+      overflow:hidden;
+      background:#e8eef8;
+      height:58px;
+      cursor:pointer;
+      position:relative;
+    }
+    .thumb.is-loading::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(100deg, rgba(255,255,255,0) 20%, rgba(255,255,255,.55) 52%, rgba(255,255,255,0) 80%);
+      animation: shimmer 1.15s linear infinite;
+      z-index:0;
+    }
+    .thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      position:relative;
+      z-index:1;
+      opacity:1;
+      transition:opacity .2s ease;
+    }
+    .thumb.is-loading img{ opacity:.02; }
+    .thumb.is-error{
+      border-color:rgba(155,68,38,.35);
+      background:#f7ebe7;
+    }
+    .thumb.active{
+      border-color:var(--brand);
+      box-shadow:0 0 0 2px rgba(50,79,151,.18);
+    }
+    .body{ padding:14px; display:flex; flex-direction:column; gap:10px; flex:1; }
+    .meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+    }
+    .chip{
+      padding:6px 9px;
+      border-radius:999px;
+      background:#eef2fa;
+      border:1px solid rgba(50,79,151,.24);
+      font-size:12px;
+      font-weight:800;
+    }
+    .metric{ font-size:13px; color:var(--muted); font-weight:700; }
+    .detailsBox{
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:9px 10px;
+      background:#f9fbff;
+      display:grid;
+      gap:5px;
+    }
+    .detailRow{
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      font-size:12px;
+      font-weight:700;
+      color:var(--muted);
+    }
+    .detailRow b{
+      color:var(--ink);
+      font-weight:800;
+      text-align:right;
+    }
+    .meter{
+      background:#edf1f6;
+      height:10px;
+      border-radius:999px;
+      overflow:hidden;
+    }
+    .meter > i{
+      display:block;
+      height:100%;
+      background:linear-gradient(90deg,var(--brand),var(--ok));
+      border-radius:999px;
+    }
+    .roomFooter{
+      margin-top:auto;
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .btn{
+      flex:1;
+      text-align:center;
+      text-decoration:none;
+      border-radius:11px;
+      padding:11px 10px;
+      font-weight:900;
+      font-size:13px;
+      border:1px solid var(--line);
+      color:var(--ink);
+      background:#fff;
+    }
+    .btn.primary{
+      background:linear-gradient(130deg,var(--brand),var(--brand-2));
+      color:#fff;
+      border-color:transparent;
+    }
+    .btn.primary.is-disabled{
+      background:#ccd5e6;
+      color:#6c7893;
+      border-color:#c2cde1;
+      pointer-events:none;
+      cursor:not-allowed;
+    }
+    .empty{
+      margin-top:16px;
+      border:1px dashed var(--line);
+      border-radius:14px;
+      padding:18px;
+      text-align:center;
+      color:var(--muted);
+      font-weight:700;
+      display:none;
+      background:#fff;
+    }
+    .lightbox{
+      position:fixed;
+      inset:0;
+      background:rgba(6,18,34,.82);
+      z-index:260;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
+    .lightbox.is-open{ display:flex; }
+    .lightboxPane{
+      width:min(1080px,100%);
+      border:1px solid rgba(255,255,255,.24);
+      border-radius:16px;
+      background:#0b1e3a;
+      overflow:hidden;
+      box-shadow:0 20px 36px rgba(0,0,0,.4);
+    }
+    .lightboxHead{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      color:#fff;
+      border-bottom:1px solid rgba(255,255,255,.16);
+      font-weight:800;
+    }
+    .lightboxClose{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.3);
+      background:transparent;
+      color:#fff;
+      border-radius:10px;
+      width:34px;
+      height:34px;
+      cursor:pointer;
+      font-size:18px;
+      line-height:1;
+    }
+    .lightboxBody{
+      position:relative;
+      background:#071427;
+    }
+    .lightboxBody.is-loading::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(95deg, rgba(255,255,255,0) 18%, rgba(255,255,255,.42) 50%, rgba(255,255,255,0) 82%);
+      animation: shimmer 1.2s linear infinite;
+      z-index:1;
+    }
+    .lightboxImg{
+      width:100%;
+      max-height:min(76vh,860px);
+      object-fit:contain;
+      display:block;
+      background:#071427;
+      opacity:0;
+      transition:opacity .18s ease;
+      position:relative;
+      z-index:2;
+    }
+    .lightboxBody.is-ready .lightboxImg{ opacity:1; }
+    .lightboxNav{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      z-index:4;
+      width:40px;
+      height:40px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.72);
+      color:#fff;
+      background:rgba(7,20,39,.82);
+      cursor:pointer;
+      font-size:20px;
+      line-height:1;
+    }
+    .lightboxNav:hover{
+      background:rgba(7,20,39,.96);
+      border-color:#fff;
+    }
+    .lightboxPrev{ left:10px; }
+    .lightboxNext{ right:10px; }
+    .lightboxStrip{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:8px;
+      padding:10px;
+      background:#0b1e3a;
+    }
+    .lightboxThumb{
+      border:1px solid rgba(255,255,255,.3);
+      border-radius:8px;
+      overflow:hidden;
+      background:#122b4f;
+      padding:0;
+      height:72px;
+      cursor:pointer;
+    }
+    .lightboxThumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .lightboxThumb.active{ border-color:#fff; }
+    @keyframes shimmer{
+      from{ transform:translateX(-42%); }
+      to{ transform:translateX(42%); }
+    }
+    @keyframes roomStatusBump{
+      0%{ transform:translateY(0) scale(1); }
+      40%{ transform:translateY(-2px) scale(1.008); }
+      100%{ transform:translateY(0) scale(1); }
+    }
+    .show{ display:block; }
+    @media (max-width:1060px){
+      .stats{ grid-template-columns:repeat(2,1fr); }
+      .toolbar{ grid-template-columns:1fr 1fr; }
+      .grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+    }
+    @media (max-width:700px){
+      .wrap{ width:calc(100% - 16px); margin-top:12px; }
+      .hero{ padding:16px; border-radius:16px; }
+      .stats{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+      .stat{ padding:10px; }
+      .stat strong{ font-size:18px; }
+      .stat span{ font-size:12px; }
+      .mobileFilterToggle{ display:inline-flex; align-items:center; justify-content:center; }
+      .toolbar{ display:none; }
+      .toolbar.is-open{ display:grid; grid-template-columns:1fr; margin-top:10px; }
+      .grid{ grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div class="heroTop">
+        <div>
+          <h1>Salles Coworking</h1>
+          <p class="sub">Visualise les salles en un coup d'oeil: photos, capacité, places restantes et accès direct à Microsoft Booking.</p>
+          <div class="lastRealSync" id="lastRealSync">Dernière mise à jour réelle: --</div>
+        </div>
+        <div class="sync" id="syncLabel">Sync: --</div>
+      </div>
+
+      <div class="stats" id="stats"></div>
+      <button class="mobileFilterToggle" id="mobileFilterToggle" type="button" aria-expanded="false">Afficher les filtres</button>
+
+      <div class="toolbar" id="toolbar">
+        <div class="field">
+          <label for="search">Salle / zone</label>
+          <input id="search" class="input" type="text" placeholder="Ex: Fjord, Pod" />
+        </div>
+        <div class="field">
+          <label for="emplacement">Emplacement</label>
+          <select id="emplacement" class="input">
+            <option value="">Tous</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="capacity">Capacité</label>
+          <select id="capacity" class="input">
+            <option value="">Toutes</option>
+          </select>
+        </div>
+        <button class="cta" id="refreshBtn" type="button">Actualiser</button>
+      </div>
+    </section>
+
+    <section class="grid" id="roomsGrid"></section>
+    <section class="empty" id="emptyBox">Aucune salle ne correspond aux filtres.</section>
+  </main>
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <div class="lightboxPane" role="dialog" aria-modal="true" aria-label="Galerie salle">
+      <div class="lightboxHead">
+        <span id="lightboxTitle">Salle</span>
+        <button class="lightboxClose" id="lightboxClose" type="button" aria-label="Fermer">×</button>
+      </div>
+      <div class="lightboxBody">
+        <img class="lightboxImg" id="lightboxImg" src="" alt="Photo salle" />
+        <button class="lightboxNav lightboxPrev" id="lightboxPrev" type="button" aria-label="Photo précédente">‹</button>
+        <button class="lightboxNav lightboxNext" id="lightboxNext" type="button" aria-label="Photo suivante">›</button>
+      </div>
+      <div class="lightboxStrip" id="lightboxStrip"></div>
+    </div>
+  </div>
+
+  <script>
+    // Source de données (Worker/API JSON) pour la table Airtable "Salles".
+    // Laisser vide pour utiliser les données démo ci-dessous.
+    const COWORKING_FEED_URL = "https://flat-credit-0421.lcollard.workers.dev/?table=Salles";
+
+    // Power Automate webhook (à configurer)
+    const AUTOMATE_WEBHOOK_URL = "";
+    const AUTOMATE_API_KEY = "";
+    const FALLBACK_IMAGE = "data:image/svg+xml;utf8," + encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">' +
+      '<defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#e8eef8"/><stop offset="1" stop-color="#f6f9ff"/></linearGradient></defs>' +
+      '<rect width="1200" height="800" fill="url(#g)"/>' +
+      '<text x="600" y="420" text-anchor="middle" font-family="Arial,sans-serif" font-size="42" fill="#5673a6">Photo indisponible</text>' +
+      '</svg>'
+    );
+    const demoRooms = [
+      {
+        id:"salle-pod-fjord",
+        name:"Salle Pod Fjord",
+        site:"Hub principal",
+        capacity:6,
+        booked:4,
+        nextSlot:"13:30",
+        rules:"Silence + appel avec casque",
+        equip:["Ecran 65\"", "Visio", "Tableau blanc"],
+        location:"Aile Ouest, zone A",
+        bookingUrl:"https://outlook.office.com/book/",
+        image:"https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=80",
+        photos:[
+          "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80"
+        ]
+      },
+      {
+        id:"salle-pod-lac",
+        name:"Salle Pod Lac",
+        site:"Hub principal",
+        capacity:8,
+        booked:2,
+        nextSlot:"Immédiat",
+        rules:"Session max 2h",
+        equip:["Visio 4K", "Acoustique", "HDMI"],
+        location:"Aile Centre, zone B",
+        bookingUrl:"https://outlook.office.com/book/",
+        image:"https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&fit=crop&w=1200&q=80",
+        photos:[
+          "https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1200&q=80"
+        ]
+      },
+      {
+        id:"salle-pod-saguenay",
+        name:"Salle Pod Saguenay",
+        site:"Hub principal",
+        capacity:4,
+        booked:4,
+        nextSlot:"15:00",
+        rules:"Salle focus (1 projet)",
+        equip:["Focus room", "Ecran 32\""],
+        location:"Aile Est, zone C",
+        bookingUrl:"https://outlook.office.com/book/",
+        image:"https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80",
+        photos:[
+          "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80"
+        ]
+      },
+      {
+        id:"salle-la-flamme-du-nordet",
+        name:"Salle La Flamme du Nordet",
+        site:"Annexe Nord",
+        capacity:12,
+        booked:7,
+        nextSlot:"14:00",
+        rules:"Priorité ateliers équipes",
+        equip:["Projecteur", "Mode atelier"],
+        location:"Rez-de-chaussée",
+        bookingUrl:"https://outlook.office.com/book/",
+        image:"https://images.unsplash.com/photo-1517502884422-41eaead166d4?auto=format&fit=crop&w=1200&q=80",
+        photos:[
+          "https://images.unsplash.com/photo-1517502884422-41eaead166d4?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1604328471151-b52226907017?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&fit=crop&w=1200&q=80"
+        ]
+      }
+    ];
+    let rooms = demoRooms.map((r) => ({ ...r }));
+    let usingLiveData = false;
+
+    const $ = (id) => document.getElementById(id);
+    const statusMemory = {};
+
+    function slugify(v){
+      return String(v || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    }
+
+    function num(v){
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function text(v, fallback = ""){
+      const s = String(v ?? "").trim();
+      return s || fallback;
+    }
+
+    function readRecordField(fields, names, fallback = ""){
+      for (const name of names){
+        const value = fields[name];
+        if (value != null && String(value).trim() !== "") return value;
+      }
+      return fallback;
+    }
+
+    function normalizeEquipments(raw){
+      if (Array.isArray(raw)){
+        return raw.map((x) => String(x).trim()).filter(Boolean);
+      }
+      const s = String(raw || "").trim();
+      if (!s) return [];
+      return s.split(",").map((x) => x.trim()).filter(Boolean);
+    }
+
+    function normalizePhotos(fields){
+      const p1 = text(readRecordField(fields, ["Photo1", "Photo 1", "Photo"]));
+      const p2 = text(readRecordField(fields, ["Photo2", "Photo 2"]));
+      const p3 = text(readRecordField(fields, ["Photo3", "Photo 3"]));
+      const list = [p1, p2, p3].filter(Boolean);
+      return list.length ? list : [FALLBACK_IMAGE, FALLBACK_IMAGE, FALLBACK_IMAGE];
+    }
+
+    function normalizeRoomRecord(record){
+      const fields = record && record.fields ? record.fields : record || {};
+      const name = text(readRecordField(fields, ["NomSalle", "Nom Salle", "Name"]), "Salle");
+      const capacity = Math.max(0, num(readRecordField(fields, ["Capacite", "Capacité"], 0)));
+      const bookedRaw = num(readRecordField(fields, ["NbReserves", "NbRéserves"], 0));
+      const leftRaw = num(readRecordField(fields, ["PlacesRestantes", "Places restantes"], Math.max(0, capacity - bookedRaw)));
+      const booked = Math.max(0, Math.min(capacity, bookedRaw || Math.max(0, capacity - leftRaw)));
+      const photos = normalizePhotos(fields);
+      const equip = normalizeEquipments(readRecordField(fields, ["Equipements", "Équipements"], []));
+      return {
+        id: text(readRecordField(fields, ["SalleId", "ID", "Id"]), slugify(name) || ("room-" + Math.random().toString(36).slice(2, 8))),
+        name,
+        site: text(readRecordField(fields, ["Site"]), "Site principal"),
+        capacity,
+        booked,
+        nextSlot: text(readRecordField(fields, ["ProchainCreneau", "ProchainCréneau"]), "--"),
+        rules: text(readRecordField(fields, ["Regle", "Règle"]), "--"),
+        equip,
+        location: text(readRecordField(fields, ["Emplacement", "Location"]), "--"),
+        bookingUrl: text(readRecordField(fields, ["BookingURL", "BookingUrl", "URL"]), "#"),
+        image: photos[0] || FALLBACK_IMAGE,
+        photos
+      };
+    }
+
+    function setEmplacementOptionsFromRooms(list){
+      const emplacements = Array.from(new Set(list.map((r) => text(r.location)).filter(Boolean))).sort((a, b) => a.localeCompare(b, "fr"));
+      const prev = $("emplacement").value;
+      $("emplacement").innerHTML = ['<option value="">Tous</option>']
+        .concat(emplacements.map((e) => `<option value="${e.replace(/"/g, "&quot;")}">${e}</option>`))
+        .join("");
+      if (emplacements.includes(prev)) $("emplacement").value = prev;
+    }
+
+    function setCapacityOptionsFromRooms(list){
+      const caps = Array.from(new Set(list.map((r) => Number(r.capacity)).filter((n) => Number.isFinite(n) && n >= 0)))
+        .sort((a, b) => a - b);
+      const prev = $("capacity").value;
+      $("capacity").innerHTML = ['<option value="">Toutes</option>']
+        .concat(caps.map((c) => `<option value="${c}">${c} place${c > 1 ? "s" : ""}</option>`))
+        .join("");
+      if (caps.map(String).includes(prev)) $("capacity").value = prev;
+    }
+
+    async function loadRooms(){
+      if (!COWORKING_FEED_URL.startsWith("http")){
+        usingLiveData = false;
+        rooms = demoRooms.map((r) => ({ ...r }));
+        setEmplacementOptionsFromRooms(rooms);
+        setCapacityOptionsFromRooms(rooms);
+        updateRealSync("");
+        return;
+      }
+      try{
+        const res = await fetch(COWORKING_FEED_URL, { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        const arr = Array.isArray(data) ? data : (Array.isArray(data.records) ? data.records : []);
+        const parsed = arr.map(normalizeRoomRecord).filter((r) => r.name && r.capacity >= 0);
+        const withRealShape = parsed.filter((r) =>
+          r.name !== "Salle" ||
+          r.capacity > 0 ||
+          r.bookingUrl !== "#" ||
+          r.photos.some((p) => p && p !== FALLBACK_IMAGE)
+        );
+        if (parsed.length && withRealShape.length){
+          usingLiveData = true;
+          rooms = withRealShape;
+          setEmplacementOptionsFromRooms(rooms);
+          setCapacityOptionsFromRooms(rooms);
+          const last = arr
+            .map((x) => x && x.fields ? readRecordField(x.fields, ["DerniereMiseAJour", "DernièreMiseAJour"], "") : "")
+            .find((v) => String(v || "").trim() !== "");
+          updateRealSync(last || "");
+          return;
+        }
+      }catch{}
+      usingLiveData = false;
+      rooms = demoRooms.map((r) => ({ ...r }));
+      setEmplacementOptionsFromRooms(rooms);
+      setCapacityOptionsFromRooms(rooms);
+      updateRealSync("");
+    }
+
+    function getStatus(room){
+      const left = room.capacity - room.booked;
+      if (left <= 0) return { label:"Complet", cls:"danger" };
+      if (left <= 2) return { label:left + " place(s)", cls:"warn" };
+      return { label:left + " places", cls:"ok" };
+    }
+
+    function computeStats(list){
+      const totalRooms = list.length;
+      const totalCapacity = list.reduce((sum,r) => sum + r.capacity, 0);
+      const used = list.reduce((sum,r) => sum + r.booked, 0);
+      const left = Math.max(0, totalCapacity - used);
+      const availableRooms = list.filter(r => r.booked < r.capacity).length;
+      return { totalRooms, totalCapacity, used, left, availableRooms };
+    }
+
+    function renderStats(list){
+      const s = computeStats(list);
+      $("stats").innerHTML = [
+        { v:s.totalRooms, k:"Salles actives" },
+        { v:s.totalCapacity, k:"Places totales" },
+        { v:s.left, k:"Places restantes" },
+        { v:s.availableRooms, k:"Salles disponibles" }
+      ].map(item =>
+        `<article class="stat"><strong>${item.v}</strong><span>${item.k}</span></article>`
+      ).join("");
+    }
+
+    function updateRealSync(airtableDateValue = ""){
+      const nowTxt = new Date().toLocaleString("fr-CA");
+      const realTxt = String(airtableDateValue || "").trim();
+      void nowTxt;
+      void realTxt;
+      $("syncLabel").textContent = "";
+      $("lastRealSync").textContent = "";
+      $("syncLabel").style.display = "none";
+      $("lastRealSync").style.display = "none";
+    }
+
+    function getRoomPhotos(room){
+      if (Array.isArray(room.photos) && room.photos.length > 0){
+        return room.photos.slice(0, 3);
+      }
+      return [room.image, room.image, room.image];
+    }
+
+    function markImageLoaded(img){
+      const parent = img.closest(".cover, .thumb");
+      if (!parent) return;
+      parent.classList.remove("is-loading", "is-error");
+      parent.classList.add("is-ready");
+    }
+
+    function applyImageFallback(img){
+      if (img.dataset.fallbackApplied === "1"){
+        const parent = img.closest(".cover, .thumb");
+        if (parent){
+          parent.classList.remove("is-loading");
+          parent.classList.add("is-error", "is-ready");
+        }
+        return;
+      }
+      img.dataset.fallbackApplied = "1";
+      img.src = FALLBACK_IMAGE;
+    }
+
+    function roomCard(room){
+      const status = getStatus(room);
+      const left = Math.max(0, room.capacity - room.booked);
+      const rate = Math.min(100, Math.round((room.booked / room.capacity) * 100));
+      const isComplete = left <= 0;
+      const equip = room.equip.map(v => `<span class="chip">${v}</span>`).join("");
+      const photos = getRoomPhotos(room);
+      const thumbs = photos.map((url, idx) =>
+        `<button type="button" class="thumb is-loading${idx === 0 ? " active" : ""}" data-room-id="${room.id}" data-photo-index="${idx}" aria-label="Photo ${idx + 1}">
+           <img src="${url}" alt="Photo ${idx + 1} ${room.name}" loading="lazy" />
+         </button>`
+      ).join("");
+      return `
+        <article class="room" data-room-id="${room.id}" data-status="${status.cls}">
+          <div class="cover is-loading">
+            <img class="coverMain js-open-gallery" data-room-id="${room.id}" data-photo-index="0" src="${photos[0]}" alt="${room.name}" loading="lazy" />
+            <span class="badge ${status.cls}">${status.label}</span>
+            <div class="name">${room.name}</div>
+          </div>
+          <div class="body">
+            <div class="thumbRow">${thumbs}</div>
+            <div class="metric">${room.booked}/${room.capacity} réservées • ${left} restante(s)</div>
+            <div class="meter"><i style="width:${rate}%"></i></div>
+            <div class="detailsBox">
+              <div class="detailRow"><span>Capacité</span><b>${room.capacity} places</b></div>
+              <div class="detailRow"><span>Places restantes</span><b>${left}</b></div>
+              <div class="detailRow"><span>Prochain créneau</span><b>${room.nextSlot || "--"}</b></div>
+              <div class="detailRow"><span>Règle</span><b>${room.rules || "--"}</b></div>
+            </div>
+            <div class="meta">${equip}</div>
+            <div class="roomFooter">
+              <a class="btn" target="_blank" rel="noopener noreferrer" href="${room.bookingUrl}">Disponibilités</a>
+              <a class="btn primary js-reserve${isComplete ? " is-disabled" : ""}" data-room-id="${room.id}" data-disabled="${isComplete ? "1" : "0"}" target="_blank" rel="noopener noreferrer" href="${isComplete ? "#" : room.bookingUrl}" aria-disabled="${isComplete ? "true" : "false"}">${isComplete ? "Complet" : "Réserver"}</a>
+            </div>
+          </div>
+        </article>`;
+    }
+
+    function hasAutomateWebhook(){
+      return AUTOMATE_WEBHOOK_URL.startsWith("https://") && !!AUTOMATE_API_KEY;
+    }
+
+    async function sendReserveSignal(room){
+      if (!hasAutomateWebhook()) return;
+      const now = new Date();
+      const payload = {
+        salleId: room.id,
+        action: "reserve",
+        reservationId: "prebooking_" + room.id + "_" + now.getTime(),
+        date: now.toISOString().slice(0, 10),
+        startTime: "",
+        endTime: "",
+        email: "",
+        fullName: "",
+        source: "coworking_page"
+      };
+      try{
+        await fetch(AUTOMATE_WEBHOOK_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": AUTOMATE_API_KEY
+          },
+          body: JSON.stringify(payload),
+          keepalive: true
+        });
+      }catch{}
+    }
+
+    const lightboxState = { roomId:"", index:0 };
+
+    function setLightboxImage(url, alt){
+      const body = $("lightbox").querySelector(".lightboxBody");
+      const img = $("lightboxImg");
+      body.classList.remove("is-ready");
+      body.classList.add("is-loading");
+
+      img.onload = () => {
+        body.classList.remove("is-loading");
+        body.classList.add("is-ready");
+      };
+      img.onerror = () => {
+        if (img.dataset.fallbackApplied === "1"){
+          body.classList.remove("is-loading");
+          body.classList.add("is-ready");
+          return;
+        }
+        img.dataset.fallbackApplied = "1";
+        img.src = FALLBACK_IMAGE;
+      };
+
+      img.dataset.fallbackApplied = "0";
+      img.alt = alt;
+      img.src = url;
+    }
+
+    function openLightbox(roomId, index){
+      const room = rooms.find(r => r.id === roomId);
+      if (!room) return;
+      const photos = getRoomPhotos(room);
+      lightboxState.roomId = roomId;
+      lightboxState.index = Math.max(0, Math.min(index, photos.length - 1));
+      $("lightboxTitle").textContent = room.name;
+      setLightboxImage(photos[lightboxState.index], room.name + " photo " + (lightboxState.index + 1));
+      $("lightboxStrip").innerHTML = photos.map((url, i) =>
+        `<button type="button" class="lightboxThumb${i === lightboxState.index ? " active" : ""}" data-room-id="${roomId}" data-photo-index="${i}" aria-label="Photo ${i + 1}">
+           <img src="${url}" alt="Miniature ${i + 1}" loading="lazy" />
+         </button>`
+      ).join("");
+      $("lightbox").classList.add("is-open");
+      $("lightbox").setAttribute("aria-hidden", "false");
+    }
+
+    function closeLightbox(){
+      $("lightbox").classList.remove("is-open");
+      $("lightbox").setAttribute("aria-hidden", "true");
+    }
+
+    function moveLightbox(step){
+      const room = rooms.find(r => r.id === lightboxState.roomId);
+      if (!room) return;
+      const photos = getRoomPhotos(room);
+      lightboxState.index = (lightboxState.index + step + photos.length) % photos.length;
+      openLightbox(lightboxState.roomId, lightboxState.index);
+    }
+
+    function applyFilters(){
+      const q = $("search").value.trim().toLowerCase();
+      const emplacement = $("emplacement").value;
+      const capacityExact = $("capacity").value === "" ? null : Number($("capacity").value);
+      const filtered = rooms.filter(r => {
+        const hay = `${r.name} ${r.location}`.toLowerCase();
+        if (q && !hay.includes(q)) return false;
+        if (emplacement && r.location !== emplacement) return false;
+        if (capacityExact !== null && r.capacity !== capacityExact) return false;
+        return true;
+      }).sort((a,b) => (a.capacity - a.booked) - (b.capacity - b.booked));
+
+      renderStats(filtered.length ? filtered : rooms);
+      $("roomsGrid").innerHTML = filtered.map(roomCard).join("");
+      $("emptyBox").classList.toggle("show", filtered.length === 0);
+      document.querySelectorAll(".coverMain, .thumb img").forEach((img) => {
+        if (img.complete && img.naturalWidth > 0){
+          markImageLoaded(img);
+        }
+      });
+
+      filtered.forEach((room) => {
+        const cur = getStatus(room).cls;
+        const prev = statusMemory[room.id];
+        if (prev && prev !== cur){
+          const card = $("roomsGrid").querySelector(`.room[data-room-id="${room.id}"]`);
+          if (card){
+            card.classList.add("status-bump");
+            setTimeout(() => card.classList.remove("status-bump"), 620);
+          }
+        }
+        statusMemory[room.id] = cur;
+      });
+    }
+
+    async function boot(){
+      await loadRooms();
+      ["search","emplacement","capacity"].forEach(id => $(id).addEventListener("input", applyFilters));
+      $("refreshBtn").addEventListener("click", async () => {
+        await loadRooms();
+        applyFilters();
+      });
+      $("mobileFilterToggle").addEventListener("click", () => {
+        const toolbar = $("toolbar");
+        const willOpen = !toolbar.classList.contains("is-open");
+        toolbar.classList.toggle("is-open", willOpen);
+        $("mobileFilterToggle").setAttribute("aria-expanded", willOpen ? "true" : "false");
+        $("mobileFilterToggle").textContent = willOpen ? "Masquer les filtres" : "Afficher les filtres";
+      });
+      $("roomsGrid").addEventListener("click", (e) => {
+        const thumb = e.target.closest(".thumb");
+        if (thumb){
+          const roomId = thumb.getAttribute("data-room-id");
+          const photoIndex = Number(thumb.getAttribute("data-photo-index") || "0");
+          const room = rooms.find(r => r.id === roomId);
+          const card = thumb.closest(".room");
+          if (room && card){
+            const photos = getRoomPhotos(room);
+            const main = card.querySelector(".coverMain");
+            if (main && photos[photoIndex]){
+              main.src = photos[photoIndex];
+              main.setAttribute("data-photo-index", String(photoIndex));
+            }
+            card.querySelectorAll(".thumb").forEach(btn => btn.classList.remove("active"));
+            thumb.classList.add("active");
+          }
+          return;
+        }
+        const open = e.target.closest(".js-open-gallery");
+        if (open){
+          const roomId = open.getAttribute("data-room-id");
+          const photoIndex = Number(open.getAttribute("data-photo-index") || "0");
+          openLightbox(roomId, photoIndex);
+          return;
+        }
+        const a = e.target.closest(".js-reserve");
+        if (!a) return;
+        if (a.getAttribute("data-disabled") === "1"){
+          e.preventDefault();
+          return;
+        }
+        const roomId = a.getAttribute("data-room-id");
+        const room = rooms.find(r => r.id === roomId);
+        if (!room) return;
+        // Signal "intention de reservation" avant redirection Booking.
+        sendReserveSignal(room);
+      });
+      $("lightboxClose").addEventListener("click", closeLightbox);
+      $("lightbox").addEventListener("click", (e) => {
+        if (e.target === $("lightbox")) closeLightbox();
+      });
+      $("lightboxPrev").addEventListener("click", () => moveLightbox(-1));
+      $("lightboxNext").addEventListener("click", () => moveLightbox(1));
+      $("lightboxStrip").addEventListener("click", (e) => {
+        const t = e.target.closest(".lightboxThumb");
+        if (!t) return;
+        const roomId = t.getAttribute("data-room-id");
+        const photoIndex = Number(t.getAttribute("data-photo-index") || "0");
+        openLightbox(roomId, photoIndex);
+      });
+      document.addEventListener("keydown", (e) => {
+        if (!$("lightbox").classList.contains("is-open")) return;
+        if (e.key === "Escape") closeLightbox();
+        if (e.key === "ArrowLeft") moveLightbox(-1);
+        if (e.key === "ArrowRight") moveLightbox(1);
+      });
+
+      document.addEventListener("load", (e) => {
+        const img = e.target;
+        if (!(img instanceof HTMLImageElement)) return;
+        if (!img.matches(".coverMain, .thumb img")) return;
+        markImageLoaded(img);
+      }, true);
+
+      document.addEventListener("error", (e) => {
+        const img = e.target;
+        if (!(img instanceof HTMLImageElement)) return;
+        if (!img.matches(".coverMain, .thumb img")) return;
+        applyImageFallback(img);
+      }, true);
+
+      let touchStartX = 0;
+      let touchStartY = 0;
+      const lightboxBody = $("lightbox").querySelector(".lightboxBody");
+      lightboxBody.addEventListener("touchstart", (e) => {
+        const t = e.changedTouches[0];
+        touchStartX = t.clientX;
+        touchStartY = t.clientY;
+      }, { passive: true });
+      lightboxBody.addEventListener("touchend", (e) => {
+        const t = e.changedTouches[0];
+        const dx = t.clientX - touchStartX;
+        const dy = t.clientY - touchStartY;
+        if (Math.abs(dx) < 42) return;
+        if (Math.abs(dx) < Math.abs(dy)) return;
+        if (dx > 0) moveLightbox(-1);
+        else moveLightbox(1);
+      }, { passive: true });
+
+      applyFilters();
+    }
+
+    boot();
+  </script>
+</body>
+</html>

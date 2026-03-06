@@ -1,0 +1,1392 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RDV ORIANCE | Conseils</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
+    * { box-sizing:border-box; }
+    :root{
+      --bg:#f2f5f9;
+      --ink:#1b365d;
+      --muted:#6082bd;
+      --line:rgba(27,54,93,.16);
+      --brand:#324f97;
+      --brand-2:#3b64a9;
+      --green:#718e5d;
+      --green-dark:#546c51;
+      --orange:#d08446;
+      --orange-soft:#f2bb61;
+      --terra:#9b4426;
+      --card:#ffffff;
+      --ok:#91b769;
+      --radius:18px;
+    }
+    body{
+      margin:0;
+      background:
+        radial-gradient(1000px 360px at 10% -8%, rgba(113,142,93,.18), transparent 56%),
+        radial-gradient(1100px 420px at 90% 0%, rgba(50,79,151,.16), transparent 55%),
+        var(--bg);
+      color:var(--ink);
+      font-family:'Manrope', system-ui, sans-serif;
+    }
+    .shell{
+      width:min(1280px, calc(100% - 28px));
+      margin:22px auto 36px;
+    }
+    .hero{
+      border:1px solid var(--line);
+      border-radius:26px;
+      overflow:visible;
+      background:#fff;
+      box-shadow:0 24px 34px rgba(12,35,70,.08);
+    }
+    .heroInner{
+      padding:24px;
+      display:grid;
+      grid-template-columns:1.5fr .9fr;
+      gap:16px;
+      align-items:stretch;
+    }
+    h1{
+      margin:0 0 8px;
+      font-family:'Poppins', 'Manrope', system-ui, sans-serif;
+      font-size:clamp(28px, 4vw, 48px);
+      letter-spacing:-.03em;
+      line-height:1;
+    }
+    .lead{
+      margin:0;
+      color:var(--muted);
+      font-size:15px;
+      max-width:760px;
+    }
+    .heroMeta{
+      margin-top:14px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .pill{
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:8px 11px;
+      font-size:12px;
+      font-weight:800;
+      background:#fff;
+    }
+    .quick{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+      background:linear-gradient(145deg,#eff3fb,#f5efe8);
+      display:grid;
+      gap:9px;
+      align-content:start;
+    }
+    .quick .k{
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.09em;
+      color:var(--muted);
+      font-weight:800;
+    }
+    .quick strong{
+      font-size:26px;
+      letter-spacing:-.03em;
+      line-height:1;
+    }
+    .toolbar{
+      border-top:1px solid var(--line);
+      background:#fcfdff;
+      padding:14px 24px 18px;
+      display:grid;
+      grid-template-columns:1.4fr 1fr auto;
+      gap:10px;
+      align-items:end;
+    }
+    .weekNav{
+      border-top:1px solid var(--line);
+      background:#f8fbff;
+      padding:10px 24px;
+      display:grid;
+      grid-template-columns:auto auto 1fr auto minmax(320px, 360px);
+      gap:8px;
+      align-items:start;
+    }
+    .weekBtn{
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--ink);
+      border-radius:10px;
+      height:40px;
+      padding:0 12px;
+      font-size:12px;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .weekBtn[disabled]{
+      opacity:.55;
+      cursor:not-allowed;
+    }
+    .weekLabel{
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:8px 12px;
+      min-height:40px;
+      display:flex;
+      align-items:center;
+      font-size:13px;
+      font-weight:900;
+      background:#fff;
+    }
+    .dateBlock{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-width:320px;
+      max-width:360px;
+      width:100%;
+      position:relative;
+    }
+    .nativeDate{
+      position:absolute;
+      width:1px;
+      height:1px;
+      padding:0;
+      margin:0;
+      border:0;
+      overflow:hidden;
+      clip:rect(0 0 0 0);
+      white-space:nowrap;
+    }
+    .datePill{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--ink);
+      font-weight:900;
+      cursor:pointer;
+      box-shadow:0 6px 14px rgba(10,34,68,.07);
+    }
+    .pillLabel{
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+    .pillValue{
+      margin-left:auto;
+      font-size:14px;
+      font-weight:900;
+    }
+    .pillChevron{
+      font-size:13px;
+      opacity:.8;
+    }
+    .monthCal{
+      position:absolute;
+      top:calc(100% + 8px);
+      left:0;
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+      box-shadow:0 14px 26px rgba(10,34,68,.14);
+      padding:10px;
+      z-index:50;
+      opacity:0;
+      transform:translateY(-6px) scale(.99);
+      pointer-events:none;
+      transition:opacity .14s ease, transform .14s ease;
+    }
+    .monthCal.is-collapsed{ display:none; }
+    .monthCal.is-open{
+      display:block;
+      opacity:1;
+      transform:translateY(0) scale(1);
+      pointer-events:auto;
+    }
+    .monthHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      padding-bottom:6px;
+    }
+    .monthLabel{
+      font-size:13px;
+      font-weight:900;
+      color:var(--ink);
+      text-transform:capitalize;
+    }
+    .iconBtn{
+      width:32px;
+      height:32px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--ink);
+      font-weight:900;
+      cursor:pointer;
+    }
+    .dow{
+      display:grid;
+      grid-template-columns:repeat(7,1fr);
+      gap:4px;
+      padding:2px 0 6px;
+      color:#6f7f99;
+      font-size:10px;
+      font-weight:900;
+    }
+    .dow > span{ text-align:center; }
+    .days{
+      display:grid;
+      grid-template-columns:repeat(7,1fr);
+      gap:4px;
+    }
+    .day{
+      width:100%;
+      height:34px;
+      border-radius:10px;
+      border:1px solid transparent;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:12px;
+      font-weight:900;
+      color:var(--ink);
+      background:#fff;
+      cursor:pointer;
+      user-select:none;
+    }
+    .day.muted{
+      opacity:.35;
+      cursor:default;
+      pointer-events:none;
+    }
+    .day.disabled-day{
+      opacity:.4;
+      cursor:not-allowed;
+      pointer-events:none;
+    }
+    .day.thu{
+      background:#edf2fa;
+      border-color:rgba(50,79,151,.25);
+    }
+    .day.selected{
+      background:linear-gradient(135deg,var(--brand),var(--brand-2));
+      color:#fff;
+      border-color:rgba(27,54,93,.2);
+    }
+    .datePill:focus-visible,
+    .iconBtn:focus-visible,
+    .day:focus-visible{
+      outline:3px solid rgba(58,93,174,.3);
+      outline-offset:2px;
+    }
+    .field label{
+      display:block;
+      margin:0 0 6px;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+    .input{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:12px;
+      height:44px;
+      background:#fff;
+      padding:0 12px;
+      color:var(--ink);
+      font-size:14px;
+      font-weight:700;
+    }
+    .btn{
+      border:0;
+      border-radius:12px;
+      height:44px;
+      padding:0 15px;
+      font-weight:900;
+      color:#fff;
+      cursor:pointer;
+      background:linear-gradient(135deg,var(--brand),var(--brand-2));
+    }
+    .layout{ margin-top:16px; }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+    .advisor{
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow:hidden;
+      background:#fff;
+      box-shadow:0 15px 22px rgba(10,34,68,.08);
+      display:grid;
+      grid-template-columns:140px 1fr;
+      min-height:220px;
+    }
+    .photo{
+      background-size:cover;
+      background-position:center;
+      position:relative;
+    }
+    .photo::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(to top,rgba(0,0,0,.42),rgba(0,0,0,.04));
+    }
+    .status{
+      position:absolute;
+      z-index:1;
+      left:8px;
+      bottom:8px;
+      background:rgba(113,142,93,.9);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.45);
+      padding:4px 8px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:900;
+    }
+    .cardBody{
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:7px;
+    }
+    .name{
+      margin:0;
+      font-size:22px;
+      line-height:1;
+      font-family:'Space Grotesk','Manrope',sans-serif;
+      letter-spacing:-.03em;
+    }
+    .role{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      font-weight:800;
+    }
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+    }
+    .chip{
+      border:1px solid rgba(113,142,93,.34);
+      background:#f2f6ec;
+      color:var(--green-dark);
+      padding:4px 8px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:800;
+    }
+    .slots{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+    .slot{
+      border:1px solid rgba(50,79,151,.32);
+      background:#edf2fa;
+      color:var(--brand);
+      border-radius:8px;
+      padding:4px 7px;
+      font-size:11px;
+      font-weight:800;
+    }
+    .actions{
+      margin-top:auto;
+      display:flex;
+      gap:7px;
+    }
+    .ghost,.solid{
+      border-radius:10px;
+      padding:10px;
+      font-size:12px;
+      font-weight:900;
+      text-decoration:none;
+      text-align:center;
+      flex:1;
+    }
+    .ghost{
+      border:1px solid var(--line);
+      color:var(--ink);
+      background:#fff;
+    }
+    .solid{
+      border:0;
+      color:#fff;
+      background:linear-gradient(135deg,var(--brand),var(--brand-2));
+    }
+    .empty{
+      display:none;
+      border:1px dashed var(--line);
+      border-radius:12px;
+      padding:16px;
+      color:var(--muted);
+      font-weight:700;
+      background:#fff;
+    }
+    .show{ display:block; }
+    .srOnly{
+      position:absolute !important;
+      width:1px;
+      height:1px;
+      padding:0;
+      margin:-1px;
+      overflow:hidden;
+      clip:rect(0,0,0,0);
+      white-space:nowrap;
+      border:0;
+    }
+    .bioModal{
+      position:fixed;
+      inset:0;
+      z-index:220;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      background:rgba(8,22,44,.62);
+      backdrop-filter:blur(4px);
+    }
+    .bioModal.is-open{ display:flex; }
+    .bioPanel{
+      width:min(760px,100%);
+      border:1px solid rgba(255,255,255,.35);
+      border-radius:22px;
+      background:linear-gradient(165deg,#ffffff,#f4f7fc);
+      box-shadow:0 24px 40px rgba(9,28,59,.24);
+      overflow:hidden;
+    }
+    .bioHead{
+      display:grid;
+      grid-template-columns:120px 1fr auto;
+      gap:12px;
+      align-items:center;
+      padding:14px;
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(145deg,#f0f4fc,#f8f3ea);
+    }
+    .bioAvatar{
+      width:120px;
+      height:120px;
+      border-radius:16px;
+      background-size:cover;
+      background-position:center 18%;
+      box-shadow:0 10px 20px rgba(8,24,47,.18);
+    }
+    .bioTitle h3{
+      margin:0 0 6px;
+      font-size:28px;
+      line-height:1;
+      letter-spacing:-.03em;
+      font-family:'Space Grotesk','Manrope',sans-serif;
+    }
+    .bioTitle p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      font-weight:800;
+    }
+    .bioClose{
+      align-self:start;
+      width:36px;
+      height:36px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--ink);
+      font-size:20px;
+      line-height:1;
+      cursor:pointer;
+      font-weight:900;
+    }
+    .bioBody{
+      padding:16px;
+      display:grid;
+      gap:12px;
+    }
+    .bioSpec{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+    }
+    .bioText{
+      margin:0;
+      font-size:15px;
+      color:#254472;
+      line-height:1.65;
+      white-space:pre-wrap;
+    }
+    .bioFooter{
+      display:flex;
+      justify-content:flex-end;
+    }
+    .bioCta{
+      text-decoration:none;
+      border-radius:10px;
+      border:0;
+      color:#fff;
+      background:linear-gradient(135deg,var(--brand),var(--brand-2));
+      padding:10px 14px;
+      font-size:12px;
+      font-weight:900;
+    }
+    @media (max-width:1060px){
+      .heroInner{ grid-template-columns:1fr; }
+      .weekNav{ grid-template-columns:1fr 1fr; }
+      .toolbar{ grid-template-columns:1fr 1fr; }
+      .grid{ grid-template-columns:1fr; }
+    }
+    @media (max-width:680px){
+      .shell{ width:calc(100% - 14px); margin-top:10px; }
+      .heroInner,.toolbar{ padding-left:14px; padding-right:14px; }
+      .heroInner{
+        gap:8px;
+        padding-top:12px;
+        padding-bottom:10px;
+      }
+      h1{
+        font-size:28px;
+        line-height:1.05;
+      }
+      .lead{
+        font-size:12px;
+        line-height:1.3;
+      }
+      .heroMeta{
+        margin-top:8px;
+        gap:6px;
+      }
+      .pill{
+        padding:5px 8px;
+        font-size:10px;
+      }
+      .heroMeta .pill:nth-child(3){
+        display:none;
+      }
+      .quick{
+        border-radius:12px;
+        padding:9px;
+        gap:4px;
+      }
+      .quick .k{
+        font-size:10px;
+      }
+      .quick strong{
+        font-size:20px;
+      }
+      .weekNav{
+        grid-template-columns:1fr 1fr;
+        padding:8px 14px 10px;
+        gap:6px;
+      }
+      #selectedThursdayLabel{
+        grid-column:1 / -1;
+        min-height:36px;
+        padding:7px 10px;
+        font-size:12px;
+      }
+      #nextThursdayBtn{
+        grid-column:1 / -1;
+      }
+      .weekBtn{
+        height:38px;
+        font-size:11px;
+        padding:0 10px;
+      }
+      .dateBlock{
+        grid-column:1 / -1;
+        min-width:0;
+        max-width:none;
+        gap:6px;
+      }
+      .datePill{
+        min-height:36px;
+        padding:8px 10px;
+      }
+      .pillValue{
+        font-size:13px;
+      }
+      .monthCal{
+        padding:8px;
+      }
+      .toolbar{ grid-template-columns:1fr; }
+      .field label{
+        font-size:11px;
+        margin-bottom:4px;
+      }
+      .input,.btn{
+        height:40px;
+        font-size:13px;
+      }
+      .advisor{ grid-template-columns:1fr; }
+      .photo{
+        height:170px;
+        background-position:center 26%;
+      }
+      .cardBody{
+        padding:10px;
+        gap:6px;
+      }
+      .name{
+        font-size:34px;
+      }
+      .role{
+        font-size:12px;
+      }
+      .chips,.slots{
+        gap:5px;
+      }
+      .chip,.slot{
+        font-size:10.5px;
+        padding:4px 7px;
+      }
+      .actions{
+        gap:6px;
+      }
+      .ghost,.solid{
+        padding:9px;
+        font-size:11px;
+      }
+      .bioHead{
+        grid-template-columns:1fr auto;
+        padding:10px;
+      }
+      .bioAvatar{
+        width:100%;
+        height:170px;
+        grid-column:1/-1;
+      }
+      .bioTitle h3{
+        font-size:28px;
+      }
+      .bioBody{
+        padding:12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="heroInner">
+        <div>
+          <h1>Conseillers ORIANCE</h1>
+          <p class="lead">Trouve le bon conseiller selon la spécialité et réserve directement via Microsoft Booking.</p>
+          <div class="heroMeta" id="heroMeta"></div>
+        </div>
+        <aside class="quick">
+          <span class="k">Disponibilité du jeudi</span>
+          <strong id="quickSlots">--</strong>
+          <div id="quickSync" class="srOnly" aria-hidden="true">--</div>
+        </aside>
+      </div>
+      <div class="weekNav">
+        <button class="weekBtn" id="prevThursdayBtn" type="button">Jeudi précédent</button>
+        <button class="weekBtn" id="todayThursdayBtn" type="button">Aujourd'hui</button>
+        <div class="weekLabel" id="selectedThursdayLabel">Jeudi --</div>
+        <button class="weekBtn" id="nextThursdayBtn" type="button">Jeudi suivant</button>
+        <div class="dateBlock">
+          <input class="nativeDate" id="goThursday" type="date" />
+          <button class="datePill" id="datePill" type="button" aria-expanded="false">
+            <span class="pillLabel">Jeudi sélectionné</span>
+            <span class="pillValue" id="pillValue">--</span>
+            <span class="pillChevron" id="pillChevron">▾</span>
+          </button>
+          <div class="monthCal is-collapsed" id="monthCal">
+            <div class="monthHead">
+              <button class="iconBtn" id="prevMonth" type="button">‹</button>
+              <div class="monthLabel" id="monthLabel">--</div>
+              <button class="iconBtn" id="nextMonth" type="button">›</button>
+            </div>
+            <div class="dow">
+              <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
+            </div>
+            <div class="days" id="monthDays"></div>
+          </div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="field">
+          <label for="search">Rechercher</label>
+          <input class="input" id="search" type="text" placeholder="Nom, spécialité" />
+        </div>
+        <div class="field">
+          <label for="specialty">Spécialité</label>
+          <select class="input" id="specialty">
+            <option value="">Toutes</option>
+          </select>
+        </div>
+        <button class="btn" id="refreshBtn" type="button">Actualiser</button>
+      </div>
+    </section>
+
+    <section class="layout">
+      <div>
+        <div class="grid" id="advisorsGrid"></div>
+        <div class="empty" id="emptyBox">Aucun conseiller ne correspond aux filtres.</div>
+      </div>
+    </section>
+  </main>
+
+  <div class="bioModal" id="bioModal" aria-hidden="true">
+    <div class="bioPanel" role="dialog" aria-modal="true" aria-label="Présentation conseiller">
+      <div class="bioHead">
+        <div class="bioAvatar" id="bioModalPhoto"></div>
+        <div class="bioTitle">
+          <h3 id="bioModalName">Conseiller</h3>
+          <p id="bioModalRole">--</p>
+        </div>
+        <button class="bioClose" id="bioModalClose" type="button" aria-label="Fermer">×</button>
+      </div>
+      <div class="bioBody">
+        <div class="bioSpec" id="bioModalSpecs"></div>
+        <p class="bioText" id="bioModalText"></p>
+        <div class="bioFooter">
+          <a class="bioCta" id="bioModalBooking" href="#" target="_blank" rel="noopener noreferrer">Prendre rendez-vous</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CONSEILS_FEED_URL = "https://flat-credit-0421.lcollard.workers.dev/?table=Conseillers";
+    const SLOTS_JEUDI_URL = "https://flat-credit-0421.lcollard.workers.dev/slots-jeudi";
+    const SLOTS_JEU_FALLBACK_URL = "https://flat-credit-0421.lcollard.workers.dev/slots-jeu";
+    const PROJECT_START_THURSDAY = "2026-03-05";
+    const MONTHS_FR = ["janvier","fevrier","mars","avril","mai","juin","juillet","aout","septembre","octobre","novembre","decembre"];
+    const FALLBACK_IMAGE = "data:image/svg+xml;utf8," + encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">' +
+      '<defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#e8eef8"/><stop offset="1" stop-color="#f6f9ff"/></linearGradient></defs>' +
+      '<rect width="900" height="600" fill="url(#g)"/>' +
+      '<text x="450" y="315" text-anchor="middle" font-family="Arial,sans-serif" font-size="34" fill="#5673a6">Photo indisponible</text>' +
+      '</svg>'
+    );
+
+    const demoAdvisors = [
+      {
+        id:"nancy-donnelly",
+        name:"Nancy Donnelly",
+        role:"Conseillère en croissance",
+        specialty:["Croissance", "Operations"],
+        slots:["09:00","11:00","15:00"],
+        status:"Disponible",
+        bookingUrl:"https://outlook.office.com/book/",
+        image:"https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=900&q=80"
+      },
+      {
+        id:"david-rowsome",
+        name:"David Rowsome",
+        role:"Conseiller stratégie & réseaux",
+        specialty:["Marketing", "Croissance"],
+        slots:["10:00","13:00"],
+        status:"Disponible",
+        bookingUrl:"https://outlook.office.com/book/",
+        image:"https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=80"
+      },
+      {
+        id:"laurie-gagnon",
+        name:"Laurie Gagnon",
+        role:"Conseillère financement",
+        specialty:["Financement", "Operations"],
+        slots:["09:30","14:00","16:00"],
+        status:"Disponible",
+        bookingUrl:"https://outlook.office.com/book/",
+        image:"https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=900&q=80"
+      },
+      {
+        id:"alex-morin",
+        name:"Alex Morin",
+        role:"Conseiller marketing numérique",
+        specialty:["Marketing"],
+        slots:["12:00","13:30"],
+        status:"Disponible",
+        bookingUrl:"https://outlook.office.com/book/",
+        image:"https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=900&q=80"
+      }
+    ];
+    let advisors = demoAdvisors.map((a) => ({ ...a }));
+    let usingLiveData = false;
+    let selectedThursday = PROJECT_START_THURSDAY;
+    let calMonthCursor = null;
+
+    const $ = (id) => document.getElementById(id);
+
+    function text(v, fallback = ""){
+      const s = String(v ?? "").trim();
+      return s || fallback;
+    }
+
+    function readField(fields, names, fallback = ""){
+      for (const name of names){
+        const v = fields[name];
+        if (v != null && String(v).trim() !== "") return v;
+      }
+      return fallback;
+    }
+
+    function slugify(v){
+      return String(v || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    }
+
+    function parseSpecialites(raw){
+      if (Array.isArray(raw)) return raw.map((x) => String(x).trim()).filter(Boolean);
+      const s = String(raw || "").trim();
+      if (!s) return [];
+      return s.split(",").map((x) => x.trim()).filter(Boolean);
+    }
+
+    function todayYmdToronto(){
+      const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Toronto",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).formatToParts(new Date());
+      const map = {};
+      for (const p of parts) map[p.type] = p.value;
+      return `${map.year}-${map.month}-${map.day}`;
+    }
+
+    function parseYmd(ymd){
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(ymd || "").trim());
+      if (!m) return null;
+      return { y: Number(m[1]), m: Number(m[2]), d: Number(m[3]) };
+    }
+
+    function ymdToDate(ymd){
+      const p = parseYmd(ymd);
+      if (!p) return null;
+      return new Date(p.y, p.m - 1, p.d);
+    }
+
+    function dateToYmdLocal(d){
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+
+    function formatYmdFromDate(d){
+      const y = d.getUTCFullYear();
+      const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+      const day = String(d.getUTCDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+
+    function addDaysYmd(ymd, n){
+      const p = parseYmd(ymd);
+      if (!p) return ymd;
+      const d = new Date(Date.UTC(p.y, p.m - 1, p.d));
+      d.setUTCDate(d.getUTCDate() + n);
+      return formatYmdFromDate(d);
+    }
+
+    function toThursdayOnOrAfter(ymd){
+      const p = parseYmd(ymd);
+      if (!p) return PROJECT_START_THURSDAY;
+      const d = new Date(Date.UTC(p.y, p.m - 1, p.d));
+      const delta = (4 - d.getUTCDay() + 7) % 7;
+      d.setUTCDate(d.getUTCDate() + delta);
+      return formatYmdFromDate(d);
+    }
+
+    function ymdCompare(a, b){
+      return String(a).localeCompare(String(b));
+    }
+
+    function formatThursdayLabel(ymd){
+      const p = parseYmd(ymd);
+      if (!p) return "Jeudi --";
+      const d = new Date(Date.UTC(p.y, p.m - 1, p.d));
+      return "Jeudi " + d.toLocaleDateString("fr-CA", {
+        timeZone: "UTC",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      });
+    }
+
+    function formatSelectedDayFR(ymd){
+      const d = ymdToDate(ymd);
+      if (!d) return "--";
+      return `${d.getDate()} ${MONTHS_FR[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
+    function setPill(ymd){
+      const pv = $("pillValue");
+      if (pv) pv.textContent = formatSelectedDayFR(ymd);
+    }
+
+    function renderMonthCal(selectedYMD){
+      const selected = ymdToDate(selectedYMD);
+      if (!selected) return;
+      if (!calMonthCursor) calMonthCursor = new Date(selected.getFullYear(), selected.getMonth(), 1);
+
+      const monthLabel = $("monthLabel");
+      const daysWrap = $("monthDays");
+      if (!monthLabel || !daysWrap) return;
+
+      monthLabel.textContent = `${MONTHS_FR[calMonthCursor.getMonth()]} ${calMonthCursor.getFullYear()}`;
+      daysWrap.innerHTML = "";
+
+      const first = new Date(calMonthCursor.getFullYear(), calMonthCursor.getMonth(), 1);
+      const last = new Date(calMonthCursor.getFullYear(), calMonthCursor.getMonth() + 1, 0);
+      const firstDow = (first.getDay() + 6) % 7; // lundi=0
+      const prevMonthLast = new Date(calMonthCursor.getFullYear(), calMonthCursor.getMonth(), 0);
+      const totalCells = 42;
+
+      for (let i = 0; i < totalCells; i++) {
+        const cellIndex = i - firstDow + 1;
+        let d;
+        let inMonth = true;
+
+        if (cellIndex < 1) {
+          d = new Date(calMonthCursor.getFullYear(), calMonthCursor.getMonth() - 1, prevMonthLast.getDate() + cellIndex);
+          inMonth = false;
+        } else if (cellIndex > last.getDate()) {
+          d = new Date(calMonthCursor.getFullYear(), calMonthCursor.getMonth() + 1, cellIndex - last.getDate());
+          inMonth = false;
+        } else {
+          d = new Date(calMonthCursor.getFullYear(), calMonthCursor.getMonth(), cellIndex);
+        }
+
+        const ymd = dateToYmdLocal(d);
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "day";
+        if (d.getDay() === 4) btn.classList.add("thu");
+        if (ymd === selectedYMD) btn.classList.add("selected");
+
+        const isThursday = d.getDay() === 4;
+        const beforeProject = ymdCompare(ymd, PROJECT_START_THURSDAY) < 0;
+
+        if (!inMonth) {
+          btn.classList.add("muted");
+          btn.disabled = true;
+        } else if (!isThursday || beforeProject) {
+          btn.classList.add("disabled-day");
+          btn.disabled = true;
+        } else {
+          btn.addEventListener("click", async () => {
+            selectedThursday = ymd;
+            const sd = ymdToDate(selectedThursday);
+            calMonthCursor = sd ? new Date(sd.getFullYear(), sd.getMonth(), 1) : calMonthCursor;
+            setThursdayUi();
+            await loadSlotsForSelectedThursday();
+            applyFilters();
+
+            const cal = $("monthCal");
+            cal.classList.remove("is-open");
+            cal.classList.add("is-collapsed");
+            $("datePill").setAttribute("aria-expanded", "false");
+            $("pillChevron").textContent = "▾";
+          });
+        }
+
+        btn.textContent = String(d.getDate());
+        daysWrap.appendChild(btn);
+      }
+    }
+
+    function parseSlots(raw){
+      if (Array.isArray(raw)) return raw.map((x) => String(x).trim()).filter(Boolean);
+      const s = String(raw || "").trim();
+      if (!s) return [];
+      if (/^\d+$/.test(s)){
+        const n = Number(s);
+        return [`${n} créneau${n > 1 ? "x" : ""} disponible${n > 1 ? "s" : ""}`];
+      }
+      return s.split(",").map((x) => x.trim()).filter(Boolean);
+    }
+
+    function escapeHtml(value){
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function normalizeAdvisor(record){
+      const fields = record && record.fields ? record.fields : record || {};
+      const name = text(readField(fields, ["NomComplet", "Nom complet", "Name"]), "Conseiller");
+      return {
+        id: text(readField(fields, ["ConseillerId", "ID", "Id"]), slugify(name) || ("adv-" + Math.random().toString(36).slice(2, 8))),
+        name,
+        role: text(readField(fields, ["Role", "Rôle"]), "--"),
+        specialty: parseSpecialites(readField(fields, ["Specialites", "Spécialités"], [])),
+        slots: parseSlots(readField(fields, ["SlotsDisponibles", "Slots disponibles"], [])),
+        fallbackSlots: parseSlots(readField(fields, ["SlotsDisponibles", "Slots disponibles"], [])),
+        status: text(readField(fields, ["Statut"]), "Disponible"),
+        bio: text(readField(fields, ["Bio", "Biographie"]), ""),
+        bookingUrl: text(readField(fields, ["BookingURL", "BookingUrl", "URL"]), "#"),
+        image: text(readField(fields, ["Photo"]), FALLBACK_IMAGE)
+      };
+    }
+
+    function setThursdayUi(){
+      $("selectedThursdayLabel").textContent = formatThursdayLabel(selectedThursday);
+      $("goThursday").value = selectedThursday;
+      $("goThursday").setAttribute("min", PROJECT_START_THURSDAY);
+      $("prevThursdayBtn").disabled = ymdCompare(selectedThursday, PROJECT_START_THURSDAY) <= 0;
+      setPill(selectedThursday);
+      const d = ymdToDate(selectedThursday);
+      if (d) calMonthCursor = new Date(d.getFullYear(), d.getMonth(), 1);
+      renderMonthCal(selectedThursday);
+    }
+
+    function normalizeHHMM(v){
+      const m = /(\d{1,2}):(\d{2})/.exec(String(v || "").trim());
+      if (!m) return "";
+      const hh = Number(m[1]);
+      const mm = Number(m[2]);
+      if (hh < 0 || hh > 23 || mm < 0 || mm > 59) return "";
+      return `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}`;
+    }
+
+    function hhmmToMinutes(v){
+      const t = normalizeHHMM(v);
+      if (!t) return null;
+      const [h, m] = t.split(":").map(Number);
+      return h * 60 + m;
+    }
+
+    function minutesToHHMM(min){
+      const h = Math.floor(min / 60);
+      const m = min % 60;
+      return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+    }
+
+    function isOfficeHour(hhmm){
+      const mins = hhmmToMinutes(hhmm);
+      if (mins == null) return false;
+      return mins >= 8 * 60 && mins <= 18 * 60; // 08:00 -> 18:00 max
+    }
+
+    function expandRangeToSlots(startRaw, endRaw, stepMin = 30){
+      const start = hhmmToMinutes(startRaw);
+      const end = hhmmToMinutes(endRaw);
+      if (start == null || end == null || end <= start) return [];
+      const out = [];
+      for (let cur = start; cur < end; cur += stepMin) {
+        const hhmm = minutesToHHMM(cur);
+        if (isOfficeHour(hhmm)) out.push(hhmm);
+      }
+      return out;
+    }
+
+    function extractSlotValues(slot){
+      if (slot && typeof slot === "object") {
+        const start = normalizeHHMM(
+          slot.heureDebut || slot.heure || slot.start || slot.startTime || slot.time || ""
+        );
+        const end = normalizeHHMM(slot.heureFin || slot.end || slot.endTime || "");
+        if (start && end) return expandRangeToSlots(start, end, 30);
+        if (start && isOfficeHour(start)) return [start];
+        return [];
+      }
+
+      const s = String(slot || "").trim();
+      if (!s) return [];
+
+      const times = s.match(/\d{1,2}:\d{2}/g) || [];
+      if (times.length >= 2) {
+        return expandRangeToSlots(times[0], times[1], 30);
+      }
+
+      const single = normalizeHHMM(s);
+      return single && isOfficeHour(single) ? [single] : [];
+    }
+
+    function extractAvailableSlotsFromPayload(data){
+      const first = Array.isArray(data && data.thursdays) ? data.thursdays[0] : null;
+      if (!first) return [];
+
+      const rawSlots = Array.isArray(first.availableSlots)
+        ? first.availableSlots
+        : (Array.isArray(first.slots) ? first.slots : []);
+
+      const set = new Set();
+      for (const slot of rawSlots) {
+        for (const hhmm of extractSlotValues(slot)) set.add(hhmm);
+      }
+
+      return Array.from(set).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+    }
+
+    async function fetchThursdaySlots(resourceId){
+      const q = `resourceId=${encodeURIComponent(resourceId)}&weeks=1&start=${encodeURIComponent(selectedThursday)}`;
+      const candidates = [
+        `${SLOTS_JEUDI_URL}?${q}`,
+        `${SLOTS_JEU_FALLBACK_URL}?${q}`
+      ];
+
+      for (const endpoint of candidates){
+        try{
+          const res = await fetch(endpoint, { cache: "no-store" });
+          if (!res.ok) continue;
+          const data = await res.json();
+          return extractAvailableSlotsFromPayload(data);
+        }catch{}
+      }
+      return null;
+    }
+
+    async function loadSlotsForSelectedThursday(){
+      if (!advisors.length) return;
+
+      const jobs = advisors.map(async (advisor) => {
+        const slots = await fetchThursdaySlots(advisor.id);
+        advisor.slots = Array.isArray(slots) ? slots : [];
+      });
+
+      await Promise.all(jobs);
+    }
+
+    function setSpecialtyOptions(list){
+      const values = Array.from(new Set(list.flatMap((a) => a.specialty || []).map((x) => String(x).trim()).filter(Boolean)))
+        .sort((a, b) => a.localeCompare(b, "fr"));
+      const prev = $("specialty").value;
+      $("specialty").innerHTML = ['<option value="">Toutes</option>']
+        .concat(values.map((v) => `<option value="${v.replace(/"/g, "&quot;")}">${v}</option>`))
+        .join("");
+      if (values.includes(prev)) $("specialty").value = prev;
+    }
+
+    async function loadAdvisors(){
+      if (!CONSEILS_FEED_URL.startsWith("http")){
+        usingLiveData = false;
+        advisors = demoAdvisors.map((a) => ({ ...a }));
+        setSpecialtyOptions(advisors);
+        return;
+      }
+      try{
+        const res = await fetch(CONSEILS_FEED_URL, { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        const arr = Array.isArray(data) ? data : (Array.isArray(data.records) ? data.records : []);
+        const parsed = arr.map(normalizeAdvisor).filter((a) => a.name && a.name !== "Conseiller");
+        if (parsed.length){
+          usingLiveData = true;
+          advisors = parsed;
+          setSpecialtyOptions(advisors);
+          return;
+        }
+      }catch{}
+      usingLiveData = false;
+      advisors = demoAdvisors.map((a) => ({ ...a }));
+      setSpecialtyOptions(advisors);
+    }
+
+    function renderMeta(list){
+      const total = list.length;
+      const allSlots = list.reduce((sum,a) => sum + a.slots.length, 0);
+      $("heroMeta").innerHTML = [
+        `<span class="pill">${total} conseiller(s) actif(s)</span>`,
+        `<span class="pill">${allSlots} créneaux disponibles (${selectedThursday})</span>`,
+        `<span class="pill">Reservation via Booking Entreprise</span>`
+      ].join("");
+      $("quickSlots").textContent = allSlots + " créneaux";
+      $("quickSync").textContent = (usingLiveData ? "Live" : "Démo") + " • " + new Date().toLocaleString("fr-CA");
+    }
+
+    function card(item){
+      const specs = (item.specialty || []).map(s => `<span class="chip">${escapeHtml(s)}</span>`).join("") || '<span class="chip">Non précisé</span>';
+      const slots = (item.slots || []).map(s => `<span class="slot">${escapeHtml(s)}</span>`).join("") || '<span class="slot">Aucune plage</span>';
+      const statusLabel = escapeHtml(text(item.status, "Disponible"));
+      const name = escapeHtml(item.name);
+      const role = escapeHtml(item.role);
+      const image = escapeHtml(item.image || FALLBACK_IMAGE);
+      const bookingUrl = escapeHtml(item.bookingUrl || "#");
+      return `
+        <article class="advisor">
+          <div class="photo" style="background-image:url('${image}')">
+            <span class="status">${statusLabel}</span>
+          </div>
+          <div class="cardBody">
+            <h2 class="name">${name}</h2>
+            <p class="role">${role}</p>
+            <div class="chips">${specs}</div>
+            <div class="slots">${slots}</div>
+            <div class="actions">
+              <button class="ghost js-open-bio" type="button" data-id="${escapeHtml(item.id)}">Bio</button>
+              <a class="solid" target="_blank" rel="noopener noreferrer" href="${bookingUrl}">Prendre rendez-vous</a>
+            </div>
+          </div>
+        </article>`;
+    }
+
+    function openBioModal(advisorId){
+      const advisor = advisors.find((a) => a.id === advisorId);
+      if (!advisor) return;
+
+      $("bioModalPhoto").style.backgroundImage = `url('${advisor.image || FALLBACK_IMAGE}')`;
+      $("bioModalName").textContent = advisor.name || "Conseiller";
+      $("bioModalRole").textContent = advisor.role || "--";
+      $("bioModalSpecs").innerHTML = (advisor.specialty || []).length
+        ? advisor.specialty.map((s) => `<span class="chip">${escapeHtml(s)}</span>`).join("")
+        : '<span class="chip">Spécialité non précisée</span>';
+      $("bioModalText").textContent = advisor.bio || "Cette présentation sera ajoutée bientôt.";
+      $("bioModalBooking").setAttribute("href", advisor.bookingUrl || "#");
+
+      $("bioModal").classList.add("is-open");
+      $("bioModal").setAttribute("aria-hidden", "false");
+    }
+
+    function closeBioModal(){
+      $("bioModal").classList.remove("is-open");
+      $("bioModal").setAttribute("aria-hidden", "true");
+    }
+
+    function applyFilters(){
+      const q = $("search").value.trim().toLowerCase();
+      const specialty = $("specialty").value;
+
+      const filtered = advisors.filter(a => {
+        const hay = `${a.name} ${a.role} ${(a.specialty || []).join(" ")}`.toLowerCase();
+        if (q && !hay.includes(q)) return false;
+        if (specialty && !(a.specialty || []).includes(specialty)) return false;
+        return true;
+      });
+
+      $("advisorsGrid").innerHTML = filtered.map(card).join("");
+      $("emptyBox").classList.toggle("show", filtered.length === 0);
+      renderMeta(filtered.length ? filtered : advisors);
+    }
+
+    async function boot(){
+      await loadAdvisors();
+      const today = todayYmdToronto();
+      let defaultThursday = toThursdayOnOrAfter(today);
+      if (ymdCompare(defaultThursday, PROJECT_START_THURSDAY) < 0) {
+        defaultThursday = PROJECT_START_THURSDAY;
+      }
+      selectedThursday = defaultThursday;
+      setThursdayUi();
+      await loadSlotsForSelectedThursday();
+      ["search","specialty"].forEach(id => $(id).addEventListener("input", applyFilters));
+      $("prevThursdayBtn").addEventListener("click", async () => {
+        const prev = addDaysYmd(selectedThursday, -7);
+        selectedThursday = ymdCompare(prev, PROJECT_START_THURSDAY) < 0 ? PROJECT_START_THURSDAY : prev;
+        setThursdayUi();
+        await loadSlotsForSelectedThursday();
+        applyFilters();
+      });
+      $("nextThursdayBtn").addEventListener("click", async () => {
+        selectedThursday = addDaysYmd(selectedThursday, 7);
+        setThursdayUi();
+        await loadSlotsForSelectedThursday();
+        applyFilters();
+      });
+      $("todayThursdayBtn").addEventListener("click", async () => {
+        const today = todayYmdToronto();
+        let th = toThursdayOnOrAfter(today);
+        if (ymdCompare(th, PROJECT_START_THURSDAY) < 0) th = PROJECT_START_THURSDAY;
+        selectedThursday = th;
+        setThursdayUi();
+        await loadSlotsForSelectedThursday();
+        applyFilters();
+      });
+      $("goThursday").addEventListener("change", async (e) => {
+        const picked = String(e.target.value || "").trim();
+        if (!picked) return;
+        let th = toThursdayOnOrAfter(picked);
+        if (ymdCompare(th, PROJECT_START_THURSDAY) < 0) th = PROJECT_START_THURSDAY;
+        selectedThursday = th;
+        setThursdayUi();
+        await loadSlotsForSelectedThursday();
+        applyFilters();
+      });
+      $("prevMonth").addEventListener("click", () => {
+        if (!calMonthCursor) {
+          const sd = ymdToDate(selectedThursday);
+          if (!sd) return;
+          calMonthCursor = new Date(sd.getFullYear(), sd.getMonth(), 1);
+        }
+        calMonthCursor = new Date(calMonthCursor.getFullYear(), calMonthCursor.getMonth() - 1, 1);
+        renderMonthCal(selectedThursday);
+      });
+      $("nextMonth").addEventListener("click", () => {
+        if (!calMonthCursor) {
+          const sd = ymdToDate(selectedThursday);
+          if (!sd) return;
+          calMonthCursor = new Date(sd.getFullYear(), sd.getMonth(), 1);
+        }
+        calMonthCursor = new Date(calMonthCursor.getFullYear(), calMonthCursor.getMonth() + 1, 1);
+        renderMonthCal(selectedThursday);
+      });
+      $("datePill").addEventListener("click", () => {
+        const cal = $("monthCal");
+        const isOpen = cal.classList.contains("is-open");
+        cal.classList.toggle("is-open", !isOpen);
+        cal.classList.toggle("is-collapsed", isOpen);
+        $("datePill").setAttribute("aria-expanded", String(!isOpen));
+        $("pillChevron").textContent = !isOpen ? "▴" : "▾";
+        if (!isOpen) renderMonthCal(selectedThursday);
+      });
+      document.addEventListener("click", (e) => {
+        const cal = $("monthCal");
+        if (!cal.classList.contains("is-open")) return;
+        const block = e.target.closest(".dateBlock");
+        if (block) return;
+        cal.classList.remove("is-open");
+        cal.classList.add("is-collapsed");
+        $("datePill").setAttribute("aria-expanded", "false");
+        $("pillChevron").textContent = "▾";
+      });
+      $("refreshBtn").addEventListener("click", async () => {
+        await loadAdvisors();
+        await loadSlotsForSelectedThursday();
+        applyFilters();
+      });
+      $("advisorsGrid").addEventListener("click", (e) => {
+        const btn = e.target.closest(".js-open-bio");
+        if (!btn) return;
+        openBioModal(btn.getAttribute("data-id"));
+      });
+      $("bioModalClose").addEventListener("click", closeBioModal);
+      $("bioModal").addEventListener("click", (e) => {
+        if (e.target === $("bioModal")) closeBioModal();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && $("bioModal").classList.contains("is-open")) closeBioModal();
+        if (e.key === "Escape" && $("monthCal").classList.contains("is-open")){
+          $("monthCal").classList.remove("is-open");
+          $("monthCal").classList.add("is-collapsed");
+          $("datePill").setAttribute("aria-expanded", "false");
+          $("pillChevron").textContent = "▾";
+        }
+      });
+      applyFilters();
+    }
+
+    boot();
+  </script>
+</body>
+</html>
