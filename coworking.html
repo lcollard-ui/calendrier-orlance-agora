@@ -230,9 +230,9 @@
       backdrop-filter: blur(4px);
       pointer-events:none;
     }
-    .ok{ background:rgba(20,143,99,.85); }
-    .warn{ background:rgba(217,119,6,.85); }
-    .danger{ background:rgba(192,57,43,.9); }
+    .ok{ background:linear-gradient(135deg,var(--brand),var(--brand-2)); }
+    .warn{ background:linear-gradient(135deg,var(--brand),var(--brand-2)); }
+    .danger{ background:var(--danger); }
     .name{
       position:absolute;
       z-index:1;
@@ -521,7 +521,7 @@
       <div class="heroTop">
         <div>
           <h1>Salles Coworking</h1>
-          <p class="sub">Visualise les salles en un coup d'oeil: photos, capacité, places restantes et accès direct à Microsoft Booking.</p>
+          <p class="sub">Visualise les salles en un coup d'oeil: photos, capacité, réservations et accès direct à Microsoft Booking.</p>
           <div class="lastRealSync" id="lastRealSync">Dernière mise à jour réelle: --</div>
         </div>
         <div class="sync" id="syncLabel">Sync: --</div>
@@ -795,8 +795,8 @@
     function getStatus(room){
       const left = room.capacity - room.booked;
       if (left <= 0) return { label:"Complet", cls:"danger" };
-      if (left <= 2) return { label:left + " place(s)", cls:"warn" };
-      return { label:left + " places", cls:"ok" };
+      const label = left === 1 ? "1 place" : `${left} places`;
+      return { label, cls:"ok" };
     }
 
     function computeStats(list){
@@ -813,7 +813,7 @@
       $("stats").innerHTML = [
         { v:s.totalRooms, k:"Salles actives" },
         { v:s.totalCapacity, k:"Places totales" },
-        { v:s.left, k:"Places restantes" },
+        { v:s.used, k:"Places réservées" },
         { v:s.availableRooms, k:"Salles disponibles" }
       ].map(item =>
         `<article class="stat"><strong>${item.v}</strong><span>${item.k}</span></article>`
@@ -879,11 +879,10 @@
           </div>
           <div class="body">
             <div class="thumbRow">${thumbs}</div>
-            <div class="metric">${room.booked}/${room.capacity} réservées • ${left} restante(s)</div>
+            <div class="metric">${room.booked}/${room.capacity} réservées</div>
             <div class="meter"><i style="width:${rate}%"></i></div>
             <div class="detailsBox">
               <div class="detailRow"><span>Capacité</span><b>${room.capacity} places</b></div>
-              <div class="detailRow"><span>Places restantes</span><b>${left}</b></div>
               <div class="detailRow"><span>Prochain créneau</span><b>${room.nextSlot || "--"}</b></div>
               <div class="detailRow"><span>Règle</span><b>${room.rules || "--"}</b></div>
             </div>
