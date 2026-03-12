@@ -759,6 +759,18 @@
       padding: 16px;
       color: var(--tslsj-navy);
     }
+    /* En iframe plein-hauteur, centrer "visuellement" en haut pour éviter un modal trop bas. */
+    .is-iframe-embed .identityModal,
+    .is-iframe-embed .infoModal,
+    .is-iframe-embed .shareModal{
+      align-items: flex-start;
+      padding-top: 64px;
+    }
+    .is-iframe-embed .identityCard,
+    .is-iframe-embed .infoCard,
+    .is-iframe-embed .shareCard{
+      margin-top: 0;
+    }
     .shareTitle{
       margin: 0;
       font-size: 20px;
@@ -1625,6 +1637,10 @@
     const PROMO_TABLE = "BandeauCalendrier";
 
     const $ = (id) => document.getElementById(id);
+    const IS_IFRAME_EMBED = (() => {
+      try { return window.self !== window.top; } catch { return true; }
+    })();
+    if (IS_IFRAME_EMBED) document.documentElement.classList.add("is-iframe-embed");
 
     // Grille 09:00 -> 17:00, pas 30 minutes
     const START_MIN = 9*60;
