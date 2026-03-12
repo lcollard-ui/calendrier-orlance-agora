@@ -1658,6 +1658,43 @@
       if (pv) pv.textContent = formatSelectedDayFR(ymd);
     }
 
+    const IS_IFRAME_EMBED = (() => {
+      try { return window.self !== window.top; } catch { return true; }
+    })();
+    let lastModalAnchorY = null;
+    document.addEventListener("pointerdown", (e) => {
+      if (!e || typeof e.clientY !== "number") return;
+      lastModalAnchorY = e.clientY;
+    }, true);
+
+    function openModalSmart(modalId, cardSelector){
+      const modal = $(modalId);
+      if (!modal) return;
+      modal.classList.add("is-open");
+      if (!IS_IFRAME_EMBED) return;
+
+      const card = modal.querySelector(cardSelector);
+      requestAnimationFrame(() => {
+        const vh = window.innerHeight || document.documentElement.clientHeight || 0;
+        if (!vh) return;
+        const cardH = Math.max(120, Math.min((card && card.offsetHeight) || 360, vh - 24));
+        const anchor = Number.isFinite(lastModalAnchorY) ? lastModalAnchorY : (vh / 2);
+        let top = Math.round(anchor - (cardH / 2));
+        top = Math.max(12, Math.min(top, Math.max(12, vh - cardH - 12)));
+
+        modal.style.alignItems = "flex-start";
+        modal.style.paddingTop = `${top}px`;
+      });
+    }
+
+    function closeModalSmart(modalId){
+      const modal = $(modalId);
+      if (!modal) return;
+      modal.classList.remove("is-open");
+      modal.style.alignItems = "";
+      modal.style.paddingTop = "";
+    }
+
     function isThursday(d){ return d.getDay() === 4; }
 
     function snapToThursday(d){
@@ -1991,17 +2028,17 @@
         linkEl.href = "#";
         linkEl.hidden = true;
       }
-      $("infoModal").classList.add("is-open");
+      openModalSmart("infoModal", ".infoCard");
     }
 
     function closeInfoModal(){
-      $("infoModal").classList.remove("is-open");
+      closeModalSmart("infoModal");
     }
 
     function openShareModal(shareText, shareUrl){
       $("shareText").textContent = shareText || "Copie le lien ci-dessous pour le partager.";
       $("shareInput").value = shareUrl || window.location.href;
-      $("shareModal").classList.add("is-open");
+      openModalSmart("shareModal", ".shareCard");
       setTimeout(() => {
         $("shareInput").focus();
         $("shareInput").select();
@@ -2009,7 +2046,7 @@
     }
 
     function closeShareModal(){
-      $("shareModal").classList.remove("is-open");
+      closeModalSmart("shareModal");
     }
 
     const FORCED_SHARE_URL = "https://www.tourismesaglac.com/fr/l-elan-signe-tslsj";
@@ -2753,11 +2790,11 @@
     }
 
     function openEmptyModal(){
-      $("emptyModal").classList.add("is-open");
+      openModalSmart("emptyModal", ".emptyModalCard");
     }
 
     function closeEmptyModal(){
-      $("emptyModal").classList.remove("is-open");
+      closeModalSmart("emptyModal");
     }
 
     function readEngagementMap(){
@@ -2831,12 +2868,12 @@
       $("idLastName").value = prefill.lastName || "";
       $("idEmail").value = prefill.email || "";
       $("identityError").textContent = "";
-      $("identityModal").classList.add("is-open");
+      openModalSmart("identityModal", ".identityCard");
       $("idFirstName").focus();
     }
 
     function closeIdentityModal(){
-      $("identityModal").classList.remove("is-open");
+      closeModalSmart("identityModal");
       $("identityError").textContent = "";
     }
 
