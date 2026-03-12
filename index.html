@@ -3126,32 +3126,50 @@
 
     // Auto-height pour intégration iframe (page parent écoute RDV_IFRAME_HEIGHT).
     (function () {
-      function postHeight() {
-        const h = Math.max(
+      let lastSentHeight = 0;
+      let rafId = 0;
+
+      function computeHeight() {
+        return Math.max(
           document.documentElement.scrollHeight,
           document.body.scrollHeight,
           document.documentElement.offsetHeight,
           document.body.offsetHeight
         );
+      }
+
+      function postHeightNow() {
+        const h = computeHeight();
+        // Anti-loop iframe: n'envoie que si variation utile.
+        if (Math.abs(h - lastSentHeight) < 6) return;
+        lastSentHeight = h;
         window.parent.postMessage({ type: "RDV_IFRAME_HEIGHT", height: h }, "*");
       }
 
+      function schedulePostHeight() {
+        if (rafId) return;
+        rafId = requestAnimationFrame(() => {
+          rafId = 0;
+          postHeightNow();
+        });
+      }
+
       if (typeof ResizeObserver !== "undefined") {
-        const ro = new ResizeObserver(postHeight);
+        const ro = new ResizeObserver(schedulePostHeight);
         ro.observe(document.body);
         ro.observe(document.documentElement);
       }
 
       if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(postHeight).catch(() => {});
+        document.fonts.ready.then(schedulePostHeight).catch(() => {});
       }
 
-      window.addEventListener("load", postHeight);
-      window.addEventListener("resize", postHeight);
-      setTimeout(postHeight, 150);
-      setTimeout(postHeight, 700);
-      setTimeout(postHeight, 1400);
-      setTimeout(postHeight, 2200);
+      window.addEventListener("load", schedulePostHeight);
+      window.addEventListener("resize", schedulePostHeight);
+      setTimeout(schedulePostHeight, 150);
+      setTimeout(schedulePostHeight, 700);
+      setTimeout(schedulePostHeight, 1400);
+      setTimeout(schedulePostHeight, 2200);
     })();
   </script>
 </body>
