@@ -2248,6 +2248,10 @@
       rowsEl.innerHTML = "";
       kickerEl.hidden = true;
 
+      const pingParentHeight = () => {
+        try { window.dispatchEvent(new Event("resize")); } catch {}
+      };
+
       try{
         let all = [];
         let offset = "";
@@ -2290,7 +2294,10 @@
           .filter(x => x.title || x.text)
           .sort((a, b) => a.ordre - b.ordre);
 
-        if (!usable.length) return;
+        if (!usable.length){
+          pingParentHeight();
+          return;
+        }
 
         const item = usable[0];
         const row = item.row;
@@ -2299,7 +2306,10 @@
         const text = item.text;
         const kicker = item.kicker;
 
-        if (!title && !text) return;
+        if (!title && !text){
+          pingParentHeight();
+          return;
+        }
 
         const finalTitle = (title || "Annonce").trim();
         const titleParts = finalTitle.split(/\s+/);
@@ -2370,8 +2380,12 @@
         }
 
         band.classList.add("is-open");
+        pingParentHeight();
+        setTimeout(pingParentHeight, 120);
+        setTimeout(pingParentHeight, 500);
       }catch(e){
         console.warn("Bandeau dynamique indisponible", e);
+        pingParentHeight();
       }
     }
 
@@ -3125,12 +3139,19 @@
       if (typeof ResizeObserver !== "undefined") {
         const ro = new ResizeObserver(postHeight);
         ro.observe(document.body);
+        ro.observe(document.documentElement);
+      }
+
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(postHeight).catch(() => {});
       }
 
       window.addEventListener("load", postHeight);
       window.addEventListener("resize", postHeight);
       setTimeout(postHeight, 150);
       setTimeout(postHeight, 700);
+      setTimeout(postHeight, 1400);
+      setTimeout(postHeight, 2200);
     })();
   </script>
 </body>
