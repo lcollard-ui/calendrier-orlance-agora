@@ -28,7 +28,7 @@
       --radius-md: 12px;
       --shadow-sm: 0 2px 10px rgba(0,0,0,.06);
 
-      /* ✅ AUGMENTÉ: 30 minutes = 84px (au lieu de 74px) */
+      /* AUGMENTÉ: 30 minutes = 84px (au lieu de 74px) */
       --half: 84px;
     }
 
@@ -969,7 +969,7 @@
       flex-direction:column;
       font-family:'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 
-      /* ✅ IMPORTANT: pas de scroll interne */
+      /* IMPORTANT: pas de scroll interne */
       overflow: hidden;
     }
 
@@ -1062,7 +1062,7 @@
     }
     .event.compact[data-col="reseautage"] .engageBar{
       display: flex !important;
-      margin-top: 4px;
+      margin-top: auto;
       padding-top: 3px;
       gap: 4px;
     }
@@ -1395,7 +1395,7 @@
       pointer-events:auto;
     }
 
-    /* ❌ SUPPRIMÉ: cela forçait les scrollbars internes
+    /* SUPPRIMÉ: cela forçait les scrollbars internes
        .cat-col .event{ overflow:auto; }
     */
 
@@ -1677,10 +1677,10 @@
     const F_INFO_URL_CANDIDATES = ["URLReseautage", "LienInfos"];
     const F_INFO_CTA_LABEL_CANDIDATES = ["LabelCTAReseautage", "CTAReseautage"];
 
-    // Mailchimp: colle ici l'URL "Embedded form" (list-manage.com/subscribe/post?...).
+    // Mailchimp: ici l'URL "Embedded form" (list-manage.com/subscribe/post?...).
     const MAILCHIMP_ACTION_URL = "";
     // Webhook Power Automate: endpoint POST pour tracer J'aime / Je partage.
-    // Remplace par l'URL "Lors de la réception d'une requête HTTP" de ton flux.
+    // URL "Lors de la réception d'une requête HTTP" de ton flux.
     const ENGAGEMENT_WEBHOOK_URL = "https://defaultfa3d404a4f6e411db8edc382ea9471.44.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/94a22d77adde40bd82ce467429d105c6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0UCZRQl1QWAcVBz2IasRO4hrbHDlJ2jf601RUe3Ddbc";
     const ENGAGEMENT_STORAGE_KEY = "rdv_oriance_engagement_v1";
     const PROFILE_STORAGE_KEY = "rdv_oriance_profile_v1";
@@ -2782,7 +2782,7 @@
           });
         }
 
-        // ✅ Pleine largeur (ex: dîner / lunch)
+        // Pleine largeur (ex: dîner / lunch)
         if (ev.isFullWidth) {
           const idx = staggerByCol.full++;
           card.style.animationDelay = (Math.min(idx, 8) * 22) + "ms";
