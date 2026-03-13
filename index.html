@@ -1012,21 +1012,70 @@
       white-space: normal;
       overflow: hidden;
       word-break: break-word;
-      min-height: calc(1.22em * 2);
-      margin-bottom: 4px;
+      min-height: 0;
+      margin-bottom: 2px;
     }
     .event.compact .m{
       font-size: 12px;
-      margin-top: 3px;
+      margin-top: 0;
       margin-bottom: 4px;
       font-weight: 800;
       color: var(--ink);
       line-height: 1.24;
+      display: block;
       position: relative;
       z-index: 2;
     }
     .event.compact .tag{
-      display:none !important;
+      display:inline-block !important;
+      margin-top: 1px;
+      margin-bottom: 4px;
+      padding: 2px 7px;
+      font-size: 10px;
+      border-radius: 9px;
+      line-height: 1.1;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      position: relative;
+      z-index: 3;
+    }
+    /* Reseautage compact: reserve un peu plus d'espace en haut pour eviter
+       tout chevauchement titre/tag sur les cartes courtes avec barre d'engagement. */
+    .event.compact[data-col="reseautage"] .t{
+      font-size: 12px;
+      line-height: 1.18;
+      -webkit-line-clamp: 2;
+      min-height: 0;
+      margin-bottom: 2px;
+    }
+    .event.compact[data-col="reseautage"] .tag{
+      margin-top: 0;
+      margin-bottom: 3px;
+    }
+    .event.compact[data-col="reseautage"] .m{
+      margin-top: 0;
+      margin-bottom: 3px;
+      font-size: 11px;
+      line-height: 1.15;
+    }
+    .event.compact[data-col="reseautage"] .engageBar{
+      display: flex !important;
+      margin-top: 4px;
+      padding-top: 3px;
+      gap: 4px;
+    }
+    .event.compact[data-col="reseautage"] .cta{
+      margin-top: 3px;
+      padding: 5px 8px;
+      font-size: 10px;
+      gap: 5px;
+    }
+    .event.compact[data-col="reseautage"] .engageBtn{
+      min-width: 36px;
+      height: 26px;
+      padding: 0 7px;
     }
     .event.compact .cta{
       margin-top: 6px;
@@ -1064,11 +1113,25 @@
     }
     .event.ultra-compact .m{
       font-size: 11px;
-      margin-top: 1px;
+      margin-top: 0;
+      margin-bottom: 3px;
       font-weight: 800;
       color: var(--ink);
+      display: block;
     }
-    .event.ultra-compact .tag,
+    .event.ultra-compact .tag{
+      display:inline-block !important;
+      margin-top: 1px;
+      margin-bottom: 3px;
+      padding: 2px 7px;
+      font-size: 10px;
+      border-radius: 9px;
+      line-height: 1.1;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
     .event.ultra-compact .cta,
     .event.ultra-compact .engageBar{
       display: none !important;
@@ -1666,6 +1729,15 @@
       if (!e || typeof e.clientY !== "number") return;
       lastModalAnchorY = e.clientY;
     }, true);
+    function setModalAnchorFromEvent(e){
+      if (!e) return;
+      if (typeof e.clientY === "number") {
+        lastModalAnchorY = e.clientY;
+        return;
+      }
+      const t = e.changedTouches && e.changedTouches[0];
+      if (t && typeof t.clientY === "number") lastModalAnchorY = t.clientY;
+    }
 
     function openModalSmart(modalId, cardSelector){
       const modal = $(modalId);
@@ -2585,6 +2657,7 @@
             cta.addEventListener("click", (e) => {
               e.preventDefault();
               e.stopPropagation();
+              setModalAnchorFromEvent(e);
               openInfoModal(ev);
             });
             card.appendChild(cta);
@@ -2594,6 +2667,17 @@
             cta.innerHTML = ev.actionLabel + ' <span class="arrow">→</span>';
             card.appendChild(cta);
           }
+        }
+
+        // Cartes 30 min reseautage: le CTA visuel est masque en ultra-compact.
+        // On garde l'acces au detail via clic sur la carte.
+        if (rowSpan === 1 && isReseautageInfo){
+          card.classList.remove("disabled");
+          card.addEventListener("click", (e) => {
+            e.preventDefault();
+            setModalAnchorFromEvent(e);
+            openInfoModal(ev);
+          });
         }
 
         if (!ev.isFullWidth && ev.colKey === "reseautage"){
@@ -2622,6 +2706,7 @@
             btn.addEventListener("click", async (e) => {
               e.preventDefault();
               e.stopPropagation();
+              setModalAnchorFromEvent(e);
 
               if (act === "like" || act === "share"){
                 const profile = await ensureIdentityProfile();
