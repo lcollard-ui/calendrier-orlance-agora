@@ -6,6 +6,7 @@
   <title>RDV ORIANCE | Coworking</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,500,0,0');
     * { box-sizing: border-box; }
     :root{
       --bg:#f4f7fc;
@@ -50,6 +51,10 @@
       flex-wrap:wrap;
       align-items:flex-start;
     }
+    .heroTop > div:first-child{
+      flex:1 1 780px;
+      min-width:0;
+    }
     h1{
       margin:0 0 6px;
       font-size:clamp(28px, 4vw, 44px);
@@ -62,7 +67,8 @@
       margin:0;
       color:var(--muted);
       font-size:15px;
-      max-width:740px;
+      line-height:1.45;
+      max-width:none;
     }
     .sync{
       background:#fff;
@@ -336,26 +342,47 @@
       background:linear-gradient(90deg,var(--brand),var(--ok));
       border-radius:999px;
     }
-.roomFooter{
-  margin-top:auto;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-.btn{
-  flex:0 0 auto;
-  min-width:160px;
-  text-align:center;
-  text-decoration:none;
-  border-radius:11px;
-  padding:11px 18px;
-  font-weight:900;
-  font-size:13px;
-  border:1px solid var(--line);
-  color:var(--ink);
-  background:#fff;
-}
+    .roomFooter{
+      margin-top:auto;
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .btn{
+      flex:1;
+      text-align:center;
+      text-decoration:none;
+      border-radius:11px;
+      padding:11px 10px;
+      font-weight:900;
+      font-size:13px;
+      border:1px solid var(--line);
+      color:var(--ink);
+      background:#fff;
+    }
+    .btn.has-icon{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+    }
+    .material-symbols-outlined{
+      font-family:'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 18px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      font-feature-settings: 'liga';
+      -webkit-font-feature-settings: 'liga';
+    }
     .btn.primary{
       background:linear-gradient(130deg,var(--brand),var(--brand-2));
       color:#fff;
@@ -488,6 +515,105 @@
       display:block;
     }
     .lightboxThumb.active{ border-color:#fff; }
+    .infoModal{
+      position: fixed;
+      inset: 0;
+      z-index: 280;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(8, 18, 34, .56);
+      backdrop-filter: blur(2px);
+      padding: 16px;
+    }
+    .infoModal.is-open{ display: flex; }
+    .infoModalPane{
+      width: min(640px, 100%);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 18px 34px rgba(10,30,58,.2);
+      overflow: hidden;
+    }
+    .infoModalHead{
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 14px 14px 8px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(140deg, #f8fbff, #eef3fb);
+    }
+    .infoModalTitle{
+      margin: 0;
+      font-family: 'Poppins', 'Manrope', system-ui, sans-serif;
+      font-size: 24px;
+      line-height: 1.1;
+      letter-spacing: -.02em;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .infoModalSub{
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .infoModalClose{
+      appearance: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      font-weight: 700;
+      padding: 0;
+      flex: 0 0 auto;
+    }
+    .infoModalBody{
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+    .infoModalText{
+      margin: 0;
+      white-space: pre-wrap;
+      color: rgba(27,54,93,.92);
+      font-size: 14px;
+      line-height: 1.55;
+      font-weight: 600;
+    }
+    .infoModalActions{
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .infoBtn{
+      min-height: 40px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+    .infoBtn.primary{
+      border-color: transparent;
+      background: linear-gradient(135deg,var(--brand),var(--brand-2));
+      color: #fff;
+    }
+    .infoBtn[hidden]{ display: none !important; }
     @keyframes shimmer{
       from{ transform:translateX(-42%); }
       to{ transform:translateX(42%); }
@@ -523,7 +649,8 @@
       <div class="heroTop">
         <div>
           <h1>Salles Coworking</h1>
-          <p class="sub">Visualise les salles en un coup d'oeil: photos, capacité, réservations et accès direct à Microsoft Booking.</p>
+          <p class="sub">Vous pouvez réserver une place individuelle en quelques clics, avec confirmation instantanée.</p>
+          <p class="sub">Pour réserver une salle complète pour votre équipe ou un groupe, cliquez sur <strong>Infos</strong> puis remplissez le formulaire. Nous validerons la disponibilité et vous confirmerons rapidement.</p>
           <div class="lastRealSync" id="lastRealSync">Dernière mise à jour réelle: --</div>
         </div>
         <div class="sync" id="syncLabel">Sync: --</div>
@@ -570,11 +697,31 @@
       <div class="lightboxStrip" id="lightboxStrip"></div>
     </div>
   </div>
+  <div class="infoModal" id="infoModal" aria-hidden="true">
+    <div class="infoModalPane" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">
+      <div class="infoModalHead">
+        <div>
+          <h3 class="infoModalTitle" id="infoModalTitle">Informations</h3>
+          <p class="infoModalSub" id="infoModalSub">Salle</p>
+        </div>
+        <button class="infoModalClose" id="infoModalClose" type="button" aria-label="Fermer">×</button>
+      </div>
+      <div class="infoModalBody">
+        <p class="infoModalText" id="infoModalText"></p>
+        <div class="infoModalActions">
+          <a class="infoBtn primary" id="infoModalCta" target="_blank" rel="noopener noreferrer" href="#">Faire une demande</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
     // Source de données (Worker/API JSON) pour la table Airtable "Salles".
     // Laisser vide pour utiliser les données démo ci-dessous.
     const COWORKING_FEED_URL = "https://flat-credit-0421.lcollard.workers.dev/?table=Salles";
+    const GROUP_CONTENT_FEED_URL = "https://flat-credit-0421.lcollard.workers.dev/?table=ContenuReservationGroupe&pageSize=50";
+    const GROUP_CONTENT_CODE_DEFAULT = "coworking-group";
+    const GROUP_CONTENT_CODE_SINGLE = "coworking-single-seat";
 
     // Power Automate webhook (à configurer)
     const AUTOMATE_WEBHOOK_URL = "";
@@ -662,6 +809,20 @@
     ];
     let rooms = demoRooms.map((r) => ({ ...r }));
     let usingLiveData = false;
+    let groupContentByCode = {
+      [GROUP_CONTENT_CODE_DEFAULT]: {
+        title: "Informations et réservation de groupe",
+        description: "Cette salle peut être réservée à l'unité via Microsoft Bookings. Pour une réservation de groupe ou une privatisation, faites une demande auprès de notre équipe.",
+        ctaLabel: "Demande de groupe",
+        ctaUrl: ""
+      },
+      [GROUP_CONTENT_CODE_SINGLE]: {
+        title: "Réservation d'une salle individuelle",
+        description: "Si vous souhaitez réserver la salle pour toute la journée, faites 2 réservations séparées en choisissant les deux créneaux disponibles (08:30-12:00 et 13:00-16:30).",
+        ctaLabel: "",
+        ctaUrl: ""
+      }
+    };
 
     const $ = (id) => document.getElementById(id);
     const statusMemory = {};
@@ -691,6 +852,28 @@
         if (value != null && String(value).trim() !== "") return value;
       }
       return fallback;
+    }
+    function isTruthy(v){
+      if (typeof v === "boolean") return v;
+      const s = String(v ?? "").trim().toLowerCase();
+      return s === "1" || s === "true" || s === "oui" || s === "yes" || s === "on";
+    }
+    function appendPrefill(url, key, value){
+      const clean = String(url || "").trim();
+      if (!clean) return "";
+      const val = String(value || "").trim();
+      if (!val) return clean;
+      const sep = clean.includes("?") ? "&" : "?";
+      return `${clean}${sep}${encodeURIComponent(key)}=${encodeURIComponent(val)}`;
+    }
+    function getGroupContentForRoom(room){
+      const code = Number(room && room.capacity) === 1 ? GROUP_CONTENT_CODE_SINGLE : GROUP_CONTENT_CODE_DEFAULT;
+      return groupContentByCode[code] || groupContentByCode[GROUP_CONTENT_CODE_DEFAULT];
+    }
+    function buildGroupCtaUrl(room, content){
+      const base = String(content && content.ctaUrl || "").trim();
+      if (!/^https?:\/\//i.test(base)) return "";
+      return appendPrefill(base, "prefill_Salle", room.name || "");
     }
 
     function normalizeEquipments(raw){
@@ -793,6 +976,44 @@
       setCapacityOptionsFromRooms(rooms);
       updateRealSync("");
     }
+    async function loadGroupContent(){
+      if (!GROUP_CONTENT_FEED_URL.startsWith("http")) return;
+      try{
+        const res = await fetch(GROUP_CONTENT_FEED_URL, { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        const arr = Array.isArray(data.records) ? data.records : [];
+        const rows = arr.map((r) => r && r.fields ? r.fields : {}).filter(Boolean);
+        const byCode = {};
+        rows.forEach((f) => {
+          const code = text(readRecordField(f, ["Code"]), "").toLowerCase();
+          if (!code) return;
+          if (!isTruthy(readRecordField(f, ["Actif"], false))) return;
+          byCode[code] = {
+            title: text(readRecordField(f, ["TitreModal"]), ""),
+            description: text(readRecordField(f, ["DescriptionModal"]), ""),
+            ctaLabel: text(readRecordField(f, ["CtaLabel"]), ""),
+            ctaUrl: text(readRecordField(f, ["CtaUrl"]), "")
+          };
+        });
+        const next = { ...groupContentByCode };
+        if (byCode[GROUP_CONTENT_CODE_DEFAULT]) {
+          next[GROUP_CONTENT_CODE_DEFAULT] = {
+            ...next[GROUP_CONTENT_CODE_DEFAULT],
+            ...byCode[GROUP_CONTENT_CODE_DEFAULT]
+          };
+        }
+        if (byCode[GROUP_CONTENT_CODE_SINGLE]) {
+          next[GROUP_CONTENT_CODE_SINGLE] = {
+            ...next[GROUP_CONTENT_CODE_SINGLE],
+            ...byCode[GROUP_CONTENT_CODE_SINGLE]
+          };
+        }
+        groupContentByCode = next;
+      }catch{
+        // Fallback: keep defaults.
+      }
+    }
 
     function getStatus(room){
       const left = room.capacity - room.booked;
@@ -890,9 +1111,30 @@
             </div>
             <div class="meta">${equip}</div>
             <div class="roomFooter">
-  <a class="btn primary js-reserve${isComplete ? " is-disabled" : ""}" data-room-id="${room.id}" data-disabled="${isComplete ? "1" : "0"}" target="_blank" rel="noopener noreferrer" href="${isComplete ? "#" : room.bookingUrl}" aria-disabled="${isComplete ? "true" : "false"}">${isComplete ? "Complet" : "Réserver ma place"}</a>
-</div>          </div>
+              <button type="button" class="btn has-icon js-open-info" data-room-id="${room.id}"><span class="material-symbols-outlined" aria-hidden="true">info</span>Infos</button>
+              <a class="btn primary js-reserve${isComplete ? " is-disabled" : ""}" data-room-id="${room.id}" data-disabled="${isComplete ? "1" : "0"}" target="_blank" rel="noopener noreferrer" href="${isComplete ? "#" : room.bookingUrl}" aria-disabled="${isComplete ? "true" : "false"}">${isComplete ? "Complet" : "Réserver"}</a>
+            </div>
+          </div>
         </article>`;
+    }
+    function openInfoModal(room){
+      const content = getGroupContentForRoom(room);
+      const title = text(content && content.title, "Informations");
+      const description = text(content && content.description, "");
+      const ctaLabel = text(content && content.ctaLabel, "");
+      const ctaUrl = buildGroupCtaUrl(room, content);
+      $("infoModalTitle").textContent = title;
+      $("infoModalSub").textContent = room && room.name ? room.name : "Salle";
+      $("infoModalText").textContent = description || "Aucune information complémentaire.";
+      $("infoModalCta").textContent = ctaLabel || "Faire une demande";
+      $("infoModalCta").href = ctaUrl || "#";
+      $("infoModalCta").hidden = !(ctaLabel && ctaUrl);
+      $("infoModal").classList.add("is-open");
+      $("infoModal").setAttribute("aria-hidden", "false");
+    }
+    function closeInfoModal(){
+      $("infoModal").classList.remove("is-open");
+      $("infoModal").setAttribute("aria-hidden", "true");
     }
 
     function hasAutomateWebhook(){
@@ -1019,6 +1261,7 @@
     }
 
     async function boot(){
+      await loadGroupContent();
       await loadRooms();
       ["search","emplacement","capacity"].forEach(id => $(id).addEventListener("input", applyFilters));
       $("refreshBtn").addEventListener("click", async () => {
@@ -1059,6 +1302,13 @@
           return;
         }
         const a = e.target.closest(".js-reserve");
+        const infoBtn = e.target.closest(".js-open-info");
+        if (infoBtn){
+          const roomId = infoBtn.getAttribute("data-room-id");
+          const room = rooms.find(r => r.id === roomId);
+          if (room) openInfoModal(room);
+          return;
+        }
         if (!a) return;
         if (a.getAttribute("data-disabled") === "1"){
           e.preventDefault();
@@ -1084,10 +1334,18 @@
         openLightbox(roomId, photoIndex);
       });
       document.addEventListener("keydown", (e) => {
+        if ($("infoModal").classList.contains("is-open") && e.key === "Escape"){
+          closeInfoModal();
+          return;
+        }
         if (!$("lightbox").classList.contains("is-open")) return;
         if (e.key === "Escape") closeLightbox();
         if (e.key === "ArrowLeft") moveLightbox(-1);
         if (e.key === "ArrowRight") moveLightbox(1);
+      });
+      $("infoModalClose").addEventListener("click", closeInfoModal);
+      $("infoModal").addEventListener("click", (e) => {
+        if (e.target === $("infoModal")) closeInfoModal();
       });
 
       document.addEventListener("load", (e) => {
