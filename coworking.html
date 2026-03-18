@@ -826,6 +826,56 @@
 
     const $ = (id) => document.getElementById(id);
     const statusMemory = {};
+    const IS_IFRAME_EMBED = (() => {
+      try { return window.self !== window.top; } catch { return true; }
+    })();
+    let lastModalAnchorY = null;
+
+    document.addEventListener("pointerdown", (e) => {
+      if (!e || typeof e.clientY !== "number") return;
+      lastModalAnchorY = e.clientY;
+    }, true);
+
+    function setModalAnchorFromEvent(e){
+      if (!e) return;
+      if (typeof e.clientY === "number") {
+        lastModalAnchorY = e.clientY;
+        return;
+      }
+      const t = e.changedTouches && e.changedTouches[0];
+      if (t && typeof t.clientY === "number") lastModalAnchorY = t.clientY;
+    }
+
+    function openModalSmart(modalId, paneSelector){
+      const modal = $(modalId);
+      if (!modal) return;
+      modal.classList.add("is-open");
+      modal.setAttribute("aria-hidden", "false");
+      if (!IS_IFRAME_EMBED) return;
+
+      const pane = modal.querySelector(paneSelector);
+      requestAnimationFrame(() => {
+        const vh = window.innerHeight || document.documentElement.clientHeight || 0;
+        if (!vh) return;
+
+        const paneH = Math.max(160, Math.min((pane && pane.offsetHeight) || 360, vh - 24));
+        const anchor = Number.isFinite(lastModalAnchorY) ? lastModalAnchorY : (vh / 2);
+        let top = Math.round(anchor - (paneH / 2));
+        top = Math.max(12, Math.min(top, Math.max(12, vh - paneH - 12)));
+
+        modal.style.alignItems = "flex-start";
+        modal.style.paddingTop = `${top}px`;
+      });
+    }
+
+    function closeModalSmart(modalId){
+      const modal = $(modalId);
+      if (!modal) return;
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden", "true");
+      modal.style.alignItems = "";
+      modal.style.paddingTop = "";
+    }
 
     function slugify(v){
       return String(v || "")
@@ -1129,12 +1179,10 @@
       $("infoModalCta").textContent = ctaLabel || "Faire une demande";
       $("infoModalCta").href = ctaUrl || "#";
       $("infoModalCta").hidden = !(ctaLabel && ctaUrl);
-      $("infoModal").classList.add("is-open");
-      $("infoModal").setAttribute("aria-hidden", "false");
+      openModalSmart("infoModal", ".infoModalPane");
     }
     function closeInfoModal(){
-      $("infoModal").classList.remove("is-open");
-      $("infoModal").setAttribute("aria-hidden", "true");
+      closeModalSmart("infoModal");
     }
 
     function hasAutomateWebhook(){
@@ -1304,6 +1352,7 @@
         const a = e.target.closest(".js-reserve");
         const infoBtn = e.target.closest(".js-open-info");
         if (infoBtn){
+          setModalAnchorFromEvent(e);
           const roomId = infoBtn.getAttribute("data-room-id");
           const room = rooms.find(r => r.id === roomId);
           if (room) openInfoModal(room);
