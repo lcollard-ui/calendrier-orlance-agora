@@ -1679,9 +1679,8 @@
 
     // Mailchimp: ici l'URL "Embedded form" (list-manage.com/subscribe/post?...).
     const MAILCHIMP_ACTION_URL = "";
-    // Webhook Power Automate: endpoint POST pour tracer J'aime / Je partage.
-    // URL "Lors de la réception d'une requête HTTP" de ton flux.
-    const ENGAGEMENT_WEBHOOK_URL = "https://defaultfa3d404a4f6e411db8edc382ea9471.44.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/94a22d77adde40bd82ce467429d105c6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0UCZRQl1QWAcVBz2IasRO4hrbHDlJ2jf601RUe3Ddbc";
+    // Endpoint public du Worker. Les secrets restent cote Worker, jamais dans le front.
+    const ENGAGEMENT_WEBHOOK_URL = "https://flat-credit-0421.lcollard.workers.dev/upsert-engagement";
     const ENGAGEMENT_STORAGE_KEY = "rdv_oriance_engagement_v1";
     const PROFILE_STORAGE_KEY = "rdv_oriance_profile_v1";
     const LAST_THURSDAY_WITH_DATA_KEY = "rdv_oriance_last_thursday_with_data_v1";
