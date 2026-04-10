@@ -1074,9 +1074,13 @@
     }
 
     function getStatus(room){
-      const left = room.capacity - room.booked;
-      if (left <= 0) return { label:"Complet", cls:"danger" };
-      const label = left === 1 ? "1 place" : `${left} places`;
+      const totalSlots = Math.max(0, room.capacity * 2);
+      const bookedSlots = Math.max(0, Math.min(totalSlots, room.booked));
+      const left = Math.max(0, totalSlots - bookedSlots);
+      const hasNextSlot = !!String(room.nextSlot || "").trim() && String(room.nextSlot || "").trim() !== "--";
+      if (left <= 0 && !hasNextSlot) return { label:"Complet", cls:"danger" };
+      const visibleLeft = left <= 0 && hasNextSlot ? 1 : left;
+      const label = visibleLeft === 1 ? "1 créneau libre" : `${visibleLeft} créneaux libres`;
       return { label, cls:"ok" };
     }
 
@@ -1084,9 +1088,10 @@
       const totalRooms = list.length;
       const totalCapacity = list.reduce((sum,r) => sum + r.capacity, 0);
       const used = list.reduce((sum,r) => sum + r.booked, 0);
-      const left = Math.max(0, totalCapacity - used);
-      const availableRooms = list.filter(r => r.booked < r.capacity).length;
-      return { totalRooms, totalCapacity, used, left, availableRooms };
+      const totalSlots = totalCapacity * 2;
+      const left = Math.max(0, totalSlots - used);
+      const availableRooms = list.filter(r => r.booked < (r.capacity * 2)).length;
+      return { totalRooms, totalCapacity, totalSlots, used, left, availableRooms };
     }
 
     function renderStats(list){
@@ -1094,7 +1099,7 @@
       $("stats").innerHTML = [
         { v:s.totalRooms, k:"Salles actives" },
         { v:s.totalCapacity, k:"Places totales" },
-        { v:s.used, k:"Places réservées" },
+        { v:s.used, k:"Créneaux réservés" },
         { v:s.availableRooms, k:"Salles disponibles" }
       ].map(item =>
         `<article class="stat"><strong>${item.v}</strong><span>${item.k}</span></article>`
@@ -1141,9 +1146,14 @@
 
     function roomCard(room){
       const status = getStatus(room);
-      const left = Math.max(0, room.capacity - room.booked);
-      const rate = Math.min(100, Math.round((room.booked / room.capacity) * 100));
-      const isComplete = left <= 0;
+      const totalSlots = Math.max(0, room.capacity * 2);
+      const bookedSlots = Math.max(0, Math.min(totalSlots, room.booked));
+      const left = Math.max(0, totalSlots - bookedSlots);
+      const rate = totalSlots > 0 ? Math.min(100, Math.round((bookedSlots / totalSlots) * 100)) : 0;
+      const hasNextSlot = !!String(room.nextSlot || "").trim() && String(room.nextSlot || "").trim() !== "--";
+      const isComplete = left <= 0 && !hasNextSlot;
+      const metricLabel = `${bookedSlots}/${totalSlots} créneau${bookedSlots > 1 ? "x" : ""} réservé${bookedSlots > 1 ? "s" : ""}`;
+      const capacityLabel = room.capacity === 1 ? "place" : "places";
       const equip = room.equip.map(v => `<span class="chip">${v}</span>`).join("");
       const photos = getRoomPhotos(room);
       const thumbs = photos.map((url, idx) =>
@@ -1160,17 +1170,17 @@
           </div>
           <div class="body">
             <div class="thumbRow">${thumbs}</div>
-            <div class="metric">${room.booked}/${room.capacity} réservées</div>
+            <div class="metric">${metricLabel}</div>
             <div class="meter"><i style="width:${rate}%"></i></div>
             <div class="detailsBox">
-              <div class="detailRow"><span>Capacité</span><b>${room.capacity} places</b></div>
+              <div class="detailRow"><span>Capacité</span><b>${room.capacity} ${capacityLabel}</b></div>
               <div class="detailRow"><span>Prochain créneau</span><b>${room.nextSlot || "--"}</b></div>
               <div class="detailRow"><span>Règle</span><b>${room.rules || "--"}</b></div>
             </div>
             <div class="meta">${equip}</div>
             <div class="roomFooter">
               <button type="button" class="btn has-icon js-open-info" data-room-id="${room.id}"><span class="material-symbols-outlined" aria-hidden="true">info</span>Infos</button>
-              <a class="btn primary js-reserve${isComplete ? " is-disabled" : ""}" data-room-id="${room.id}" data-disabled="${isComplete ? "1" : "0"}" target="_blank" rel="noopener noreferrer" href="${isComplete ? "#" : room.bookingUrl}" aria-disabled="${isComplete ? "true" : "false"}">${isComplete ? "Complet" : "Réserver"}</a>
+              <a class="btn primary js-reserve" data-room-id="${room.id}" data-disabled="0" target="_blank" rel="noopener noreferrer" href="${room.bookingUrl}" aria-disabled="false">Réserver</a>
             </div>
           </div>
         </article>`;
