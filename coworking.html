@@ -118,6 +118,45 @@
       grid-template-columns:repeat(4,minmax(140px,1fr));
       gap:10px;
     }
+    .dateNav{
+      margin-top:16px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .dateNavBtn,
+    .selectedThursday{
+      min-height:42px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:#fff;
+      color:var(--ink);
+      font:800 13px/1.2 'Manrope', system-ui, sans-serif;
+    }
+    .dateNavBtn{
+      padding:0 14px;
+      cursor:pointer;
+    }
+    .dateNavBtn:hover{
+      border-color:rgba(46,93,183,.42);
+      background:#f6f9ff;
+    }
+    .selectedThursday{
+      margin-left:auto;
+      min-width:250px;
+      padding:0 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+    }
+    .selectedThursday span{
+      color:var(--muted);
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
     .stat{
       background:var(--card);
       border:1px solid var(--line);
@@ -637,6 +676,9 @@
       .stat strong{ font-size:18px; }
       .stat span{ font-size:12px; }
       .mobileFilterToggle{ display:inline-flex; align-items:center; justify-content:center; }
+      .dateNav{ display:grid; grid-template-columns:1fr 1fr; }
+      .dateNavBtn{ padding:0 8px; }
+      .selectedThursday{ grid-column:1 / -1; margin-left:0; min-width:0; }
       .toolbar{ display:none; }
       .toolbar.is-open{ display:grid; grid-template-columns:1fr; margin-top:10px; }
       .grid{ grid-template-columns:1fr; }
@@ -662,6 +704,15 @@
           <div class="lastRealSync" id="lastRealSync">Dernière mise à jour réelle: --</div>
         </div>
         <div class="sync" id="syncLabel">Sync: --</div>
+      </div>
+
+      <div class="dateNav" aria-label="Choisir le jeudi">
+        <button class="dateNavBtn" id="prevThursday" type="button">Jeudi précédent</button>
+        <button class="dateNavBtn" id="nextThursday" type="button">Jeudi suivant</button>
+        <div class="selectedThursday">
+          <span>Jeudi sélectionné</span>
+          <strong id="selectedThursdayLabel">--</strong>
+        </div>
       </div>
 
       <div class="stats" id="stats"></div>
@@ -727,6 +778,7 @@
     // Source de données (Worker/API JSON) pour la table Airtable "Salles".
     // Laisser vide pour utiliser les données démo ci-dessous.
     const COWORKING_FEED_URL = "https://flat-credit-0421.lcollard.workers.dev/?table=Salles";
+    const COWORKING_RESERVATIONS_URL = "https://flat-credit-0421.lcollard.workers.dev/";
     const GROUP_CONTENT_FEED_URL = "https://flat-credit-0421.lcollard.workers.dev/?table=ContenuReservationGroupe&pageSize=50";
     const GROUP_CONTENT_CODE_DEFAULT = "coworking-group";
     const GROUP_CONTENT_CODE_SINGLE = "coworking-single-seat";
@@ -816,6 +868,7 @@
       }
     ];
     let rooms = demoRooms.map((r) => ({ ...r }));
+    let selectedReservations = [];
     let usingLiveData = false;
     let groupContentByCode = {
       [GROUP_CONTENT_CODE_DEFAULT]: {
@@ -904,6 +957,53 @@
       return s || fallback;
     }
 
+    function normalizeYmd(value){
+      const match = /^(\d{4}-\d{2}-\d{2})/.exec(String(value || "").trim());
+      return match ? match[1] : "";
+    }
+
+    function torontoTodayYmd(){
+      const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone:"America/Toronto",
+        year:"numeric",
+        month:"2-digit",
+        day:"2-digit"
+      }).formatToParts(new Date());
+      const values = {};
+      parts.forEach((part) => { values[part.type] = part.value; });
+      return `${values.year}-${values.month}-${values.day}`;
+    }
+
+    function addDaysYmd(ymd, amount){
+      const parts = String(ymd || "").split("-").map(Number);
+      if (parts.length !== 3 || parts.some((part) => !Number.isFinite(part))) return ymd;
+      const date = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+      date.setUTCDate(date.getUTCDate() + amount);
+      return date.toISOString().slice(0, 10);
+    }
+
+    function thursdayOnOrAfter(ymd){
+      const parts = String(ymd || "").split("-").map(Number);
+      const date = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+      const delta = (4 - date.getUTCDay() + 7) % 7;
+      date.setUTCDate(date.getUTCDate() + delta);
+      return date.toISOString().slice(0, 10);
+    }
+
+    function formatThursdayLabel(ymd){
+      const parts = String(ymd || "").split("-").map(Number);
+      const date = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2], 12));
+      return new Intl.DateTimeFormat("fr-CA", {
+        timeZone:"America/Toronto",
+        weekday:"long",
+        day:"numeric",
+        month:"long",
+        year:"numeric"
+      }).format(date);
+    }
+
+    let selectedThursday = thursdayOnOrAfter(torontoTodayYmd());
+
     function readRecordField(fields, names, fallback = ""){
       for (const name of names){
         const value = fields[name];
@@ -974,6 +1074,100 @@
         image: photos[0] || FALLBACK_IMAGE,
         photos
       };
+    }
+
+    function normalizeReservationRecord(record){
+      const fields = record && record.fields ? record.fields : record || {};
+      return {
+        roomId: text(readRecordField(fields, ["SalleId", "Salle ID"])),
+        date: normalizeYmd(readRecordField(fields, ["Date"])),
+        startTime: text(readRecordField(fields, ["HeureDebut", "Heure début", "HeureDebutReservation"])).slice(0, 5),
+        status: text(readRecordField(fields, ["StatutReservation", "Statut réservation"])).toLowerCase()
+      };
+    }
+
+    async function loadReservationsForThursday(){
+      const records = [];
+      let offset = "";
+      const formula =
+        `AND(DATETIME_FORMAT({Date},'YYYY-MM-DD')='${selectedThursday}',` +
+        `LOWER({StatutReservation}&'')='confirmed')`;
+
+      try{
+        do{
+          const url = new URL(COWORKING_RESERVATIONS_URL);
+          url.searchParams.set("table", "ReservationsCoworking");
+          url.searchParams.set("pageSize", "100");
+          url.searchParams.set("filterByFormula", formula);
+          if (offset) url.searchParams.set("offset", offset);
+
+          const response = await fetch(url.toString(), { cache:"no-store" });
+          if (!response.ok) throw new Error("HTTP " + response.status);
+          const data = await response.json();
+          records.push(...(Array.isArray(data.records) ? data.records : []));
+          offset = text(data.offset);
+        }while(offset);
+
+        selectedReservations = records
+          .map(normalizeReservationRecord)
+          .filter((reservation) =>
+            reservation.roomId &&
+            reservation.date === selectedThursday &&
+            reservation.status === "confirmed"
+          );
+        return true;
+      }catch(error){
+        console.error("Chargement des réservations coworking impossible", error);
+        selectedReservations = [];
+        return false;
+      }
+    }
+
+    function applyThursdayReservations(){
+      const byRoom = new Map();
+
+      selectedReservations.forEach((reservation) => {
+        const roomKey = reservation.roomId.toLowerCase();
+        const startMinutes = parseTimeMinutes(reservation.startTime);
+        if (!byRoom.has(roomKey)) byRoom.set(roomKey, { morning:0, afternoon:0 });
+        const counts = byRoom.get(roomKey);
+        if (startMinutes != null && startMinutes >= 12 * 60 + 30) counts.afternoon += 1;
+        else counts.morning += 1;
+      });
+
+      rooms.forEach((room) => {
+        const counts = byRoom.get(String(room.id || "").toLowerCase()) || { morning:0, afternoon:0 };
+        const capacity = Math.max(0, Number(room.capacity) || 0);
+        const morningBooked = Math.min(capacity, counts.morning);
+        const afternoonBooked = Math.min(capacity, counts.afternoon);
+        room.booked = morningBooked + afternoonBooked;
+        room.nextSlot = morningBooked < capacity
+          ? `${selectedThursday} 08:30`
+          : afternoonBooked < capacity
+          ? `${selectedThursday} 13:00`
+          : "--";
+      });
+    }
+
+    function parseTimeMinutes(value){
+      const match = /^(\d{1,2}):(\d{2})/.exec(String(value || "").trim());
+      if (!match) return null;
+      return Number(match[1]) * 60 + Number(match[2]);
+    }
+
+    function updateSelectedThursdayLabel(isLoading = false){
+      $("selectedThursdayLabel").textContent = isLoading
+        ? "Chargement..."
+        : formatThursdayLabel(selectedThursday);
+    }
+
+    async function changeSelectedThursday(dayDelta){
+      selectedThursday = addDaysYmd(selectedThursday, dayDelta);
+      updateSelectedThursdayLabel(true);
+      await loadReservationsForThursday();
+      applyThursdayReservations();
+      updateSelectedThursdayLabel(false);
+      applyFilters();
     }
 
     function setEmplacementOptionsFromRooms(list){
@@ -1077,10 +1271,8 @@
       const totalSlots = Math.max(0, room.capacity * 2);
       const bookedSlots = Math.max(0, Math.min(totalSlots, room.booked));
       const left = Math.max(0, totalSlots - bookedSlots);
-      const hasNextSlot = !!String(room.nextSlot || "").trim() && String(room.nextSlot || "").trim() !== "--";
-      if (left <= 0 && !hasNextSlot) return { label:"Complet", cls:"danger" };
-      const visibleLeft = left <= 0 && hasNextSlot ? 1 : left;
-      const label = visibleLeft === 1 ? "1 créneau libre" : `${visibleLeft} créneaux libres`;
+      if (left <= 0) return { label:"Complet", cls:"danger" };
+      const label = left === 1 ? "1 créneau libre" : `${left} créneaux libres`;
       return { label, cls:"ok" };
     }
 
@@ -1150,9 +1342,9 @@
       const bookedSlots = Math.max(0, Math.min(totalSlots, room.booked));
       const left = Math.max(0, totalSlots - bookedSlots);
       const rate = totalSlots > 0 ? Math.min(100, Math.round((bookedSlots / totalSlots) * 100)) : 0;
-      const hasNextSlot = !!String(room.nextSlot || "").trim() && String(room.nextSlot || "").trim() !== "--";
-      const isComplete = left <= 0 && !hasNextSlot;
-      const metricLabel = `${bookedSlots}/${totalSlots} créneau${bookedSlots > 1 ? "x" : ""} réservé${bookedSlots > 1 ? "s" : ""}`;
+      const metricLabel = bookedSlots === 1
+        ? `${bookedSlots}/${totalSlots} créneau réservé`
+        : `${bookedSlots}/${totalSlots} créneaux réservés`;
       const capacityLabel = room.capacity === 1 ? "place" : "places";
       const equip = room.equip.map(v => `<span class="chip">${v}</span>`).join("");
       const photos = getRoomPhotos(room);
@@ -1329,9 +1521,19 @@
     async function boot(){
       await loadGroupContent();
       await loadRooms();
+      updateSelectedThursdayLabel(true);
+      await loadReservationsForThursday();
+      applyThursdayReservations();
+      updateSelectedThursdayLabel(false);
       ["search","emplacement","capacity"].forEach(id => $(id).addEventListener("input", applyFilters));
+      $("prevThursday").addEventListener("click", () => changeSelectedThursday(-7));
+      $("nextThursday").addEventListener("click", () => changeSelectedThursday(7));
       $("refreshBtn").addEventListener("click", async () => {
+        updateSelectedThursdayLabel(true);
         await loadRooms();
+        await loadReservationsForThursday();
+        applyThursdayReservations();
+        updateSelectedThursdayLabel(false);
         applyFilters();
       });
       $("mobileFilterToggle").addEventListener("click", () => {
