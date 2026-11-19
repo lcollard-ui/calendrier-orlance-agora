@@ -351,18 +351,70 @@
       inset:0;
       background:linear-gradient(to top,rgba(0,0,0,.42),rgba(0,0,0,.04));
     }
-    .status{
-      position:absolute;
-      z-index:1;
-      left:8px;
-      bottom:8px;
-      background:rgba(113,142,93,.9);
-      color:#fff;
-      border:1px solid rgba(255,255,255,.45);
-      padding:4px 8px;
-      border-radius:999px;
+    /* Bloc de disponibilité : vert = plages ce jeudi, gris = aucune plage, gris plein = erreur de chargement */
+    .avail{
+      display:flex;
+      flex-direction:column;
+      gap:7px;
+      padding:9px 10px;
+      border-radius:10px;
+      border:1px solid;
+    }
+    .avail.ok{
+      background:#f2f6ec;
+      border-color:rgba(113,142,93,.34);
+    }
+    .avail.off,
+    .avail.err{
+      flex-direction:row;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      background:#f4f6fa;
+      border-color:var(--line);
+    }
+    .availLine{
+      display:flex;
+      align-items:center;
+      gap:7px;
+      flex-wrap:wrap;
+      font-size:12px;
+      font-weight:800;
+    }
+    .avail.ok .availLine{ color:var(--green-dark); }
+    .avail.off .availLine,
+    .avail.err .availLine{ color:#5f6878; }
+    .availSub{
+      font-weight:600;
+      color:var(--muted);
+    }
+    .dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      flex:none;
+    }
+    .avail.ok .dot{
+      background:var(--green);
+      box-shadow:0 0 0 3px rgba(113,142,93,.22);
+    }
+    .avail.off .dot{ border:2px solid #8a93a6; }
+    .avail.err .dot{ background:#8a93a6; }
+    .next{
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--ink);
+      border-radius:8px;
+      padding:6px 10px;
+      font:inherit;
       font-size:11px;
-      font-weight:900;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .next:hover{ border-color:#8a93a6; }
+    .next:focus-visible{
+      outline:3px solid rgba(58,93,174,.3);
+      outline-offset:2px;
     }
     .cardBody{
       padding:12px;
@@ -403,13 +455,27 @@
       flex-wrap:wrap;
     }
     .slot{
-      border:1px solid rgba(50,79,151,.32);
-      background:#edf2fa;
-      color:var(--brand);
-      border-radius:8px;
+      border:1px solid rgba(113,142,93,.34);
+      background:#fff;
+      color:var(--ink);
+      border-radius:7px;
       padding:4px 7px;
       font-size:11px;
       font-weight:800;
+      font-variant-numeric:tabular-nums;
+    }
+    .slot.more{
+      background:transparent;
+      border-style:dashed;
+      color:var(--green-dark);
+      font-family:inherit;
+      line-height:inherit;
+      cursor:pointer;
+    }
+    .slot.more:hover{ border-style:solid; }
+    .slot.more:focus-visible{
+      outline:3px solid rgba(58,93,174,.3);
+      outline-offset:2px;
     }
     .actions{
       margin-top:auto;
@@ -434,6 +500,11 @@
       border:0;
       color:#fff;
       background:linear-gradient(135deg,var(--brand),var(--brand-2));
+    }
+    .solid.secondary{
+      background:#fff;
+      color:var(--brand);
+      border:1px solid var(--brand-2);
     }
     .empty{
       display:none;
@@ -772,6 +843,9 @@
     const CONSEILS_FEED_URL = "https://flat-credit-0421.lcollard.workers.dev/?table=Conseillers";
     const SLOTS_JEUDI_URL = "https://flat-credit-0421.lcollard.workers.dev/slots-jeudi";
     const SLOTS_JEU_FALLBACK_URL = "https://flat-credit-0421.lcollard.workers.dev/slots-jeu";
+    const SLOTS_ALL_URL = "https://flat-credit-0421.lcollard.workers.dev/slots-conseillers";
+    const LOOKAHEAD_WEEKS = 8;      // jeudis examinés pour trouver la prochaine plage
+    const MAX_VISIBLE_SLOTS = 6;    // au-delà : « +N »
     const PROJECT_START_THURSDAY = "2026-03-05";
     const MONTHS_FR = ["janvier","fevrier","mars","avril","mai","juin","juillet","aout","septembre","octobre","novembre","decembre"];
     const FALLBACK_IMAGE = "data:image/svg+xml;utf8," + encodeURIComponent(
@@ -1013,15 +1087,25 @@
       }
     }
 
-    function parseSlots(raw){
-      if (Array.isArray(raw)) return raw.map((x) => String(x).trim()).filter(Boolean);
-      const s = String(raw || "").trim();
-      if (!s) return [];
-      if (/^\d+$/.test(s)){
-        const n = Number(s);
-        return [`${n} créneau${n > 1 ? "x" : ""} disponible${n > 1 ? "s" : ""}`];
-      }
-      return s.split(",").map((x) => x.trim()).filter(Boolean);
+    // « 3 déc. », « 1er déc. »
+    function formatDayMonth(ymd){
+      const p = parseYmd(ymd);
+      if (!p) return "";
+      const d = new Date(Date.UTC(p.y, p.m - 1, p.d));
+      const month = d.toLocaleDateString("fr-CA", { timeZone: "UTC", month: "short" });
+      return `${p.d === 1 ? "1er" : p.d} ${month}`;
+    }
+
+    // « jeudi 19 nov. »
+    function formatThursdayShort(ymd){
+      const dm = formatDayMonth(ymd);
+      return dm ? `jeudi ${dm}` : "ce jeudi";
+    }
+
+    // N'accepte que les liens https:// (bloque javascript:, data:… venant d'Airtable).
+    function safeHttpsUrl(value){
+      const s = String(value || "").trim();
+      return /^https:\/\//i.test(s) ? s : "#";
     }
 
     function escapeHtml(value){
@@ -1041,11 +1125,12 @@
         name,
         role: text(readField(fields, ["Role", "Rôle"]), "--"),
         specialty: parseSpecialites(readField(fields, ["Specialites", "Spécialités"], [])),
-        slots: parseSlots(readField(fields, ["SlotsDisponibles", "Slots disponibles"], [])),
-        fallbackSlots: parseSlots(readField(fields, ["SlotsDisponibles", "Slots disponibles"], [])),
-        status: text(readField(fields, ["Statut"]), "Disponible"),
+        // Les plages viennent du worker (jeudi sélectionné), pas des champs Statut / SlotsDisponibles d'Airtable.
+        slots: [],
+        nextThursday: "",
+        slotsState: "ok",
         bio: text(readField(fields, ["Bio", "Biographie"]), ""),
-        bookingUrl: text(readField(fields, ["BookingURL", "BookingUrl", "URL"]), "#"),
+        bookingUrl: safeHttpsUrl(readField(fields, ["BookingURL", "BookingUrl", "URL"])),
         image: text(readField(fields, ["Photo"]), FALLBACK_IMAGE)
       };
     }
@@ -1124,24 +1209,57 @@
       return single && isOfficeHour(single) ? [single] : [];
     }
 
-    function extractAvailableSlotsFromPayload(data){
-      const first = Array.isArray(data && data.thursdays) ? data.thursdays[0] : null;
-      if (!first) return [];
-
-      const rawSlots = Array.isArray(first.availableSlots)
-        ? first.availableSlots
-        : (Array.isArray(first.slots) ? first.slots : []);
+    function slotsFromThursday(th){
+      if (!th) return [];
+      const rawSlots = Array.isArray(th.availableSlots)
+        ? th.availableSlots
+        : (Array.isArray(th.slots) ? th.slots : []);
 
       const set = new Set();
       for (const slot of rawSlots) {
         for (const hhmm of extractSlotValues(slot)) set.add(hhmm);
       }
-
       return Array.from(set).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
     }
 
-    async function fetchThursdaySlots(resourceId){
-      const q = `resourceId=${encodeURIComponent(resourceId)}&weeks=1&start=${encodeURIComponent(selectedThursday)}`;
+    // À partir d'une liste de jeudis [{ date, availableSlots }] :
+    // plages du jeudi sélectionné + premier jeudi suivant qui a au moins une plage.
+    function applyThursdays(advisor, thursdays){
+      const list = Array.isArray(thursdays) ? thursdays : [];
+      const current = list.find((t) => t && t.date === selectedThursday);
+      advisor.slots = slotsFromThursday(current);
+      const next = list.find((t) =>
+        t && ymdCompare(t.date, selectedThursday) > 0 && slotsFromThursday(t).length > 0
+      );
+      advisor.nextThursday = next ? next.date : "";
+      advisor.slotsState = "ok";
+    }
+
+    function markSlotsError(advisor){
+      advisor.slots = [];
+      advisor.nextThursday = "";
+      advisor.slotsState = "error";
+    }
+
+    // Route groupée du worker : un seul appel pour tous les conseillers.
+    async function loadSlotsAllAtOnce(){
+      const q = `start=${encodeURIComponent(selectedThursday)}&weeks=${LOOKAHEAD_WEEKS}`;
+      try{
+        const res = await fetch(`${SLOTS_ALL_URL}?${q}`, { cache: "no-store" });
+        if (!res.ok) return false;
+        const data = await res.json();
+        if (!data || data.ok !== true || !data.conseillers || typeof data.conseillers !== "object") return false;
+        for (const advisor of advisors) applyThursdays(advisor, data.conseillers[advisor.id] || []);
+        return true;
+      }catch{
+        return false;
+      }
+    }
+
+    // Ancienne route, un appel par conseiller. Sert de repli si la route groupée
+    // n'est pas encore déployée ou échoue.
+    async function fetchThursdaysForAdvisor(resourceId){
+      const q = `resourceId=${encodeURIComponent(resourceId)}&weeks=${LOOKAHEAD_WEEKS}&start=${encodeURIComponent(selectedThursday)}`;
       const candidates = [
         `${SLOTS_JEUDI_URL}?${q}`,
         `${SLOTS_JEU_FALLBACK_URL}?${q}`
@@ -1152,7 +1270,7 @@
           const res = await fetch(endpoint, { cache: "no-store" });
           if (!res.ok) continue;
           const data = await res.json();
-          return extractAvailableSlotsFromPayload(data);
+          if (Array.isArray(data && data.thursdays)) return data.thursdays;
         }catch{}
       }
       return null;
@@ -1160,13 +1278,24 @@
 
     async function loadSlotsForSelectedThursday(){
       if (!advisors.length) return;
+      if (await loadSlotsAllAtOnce()) return;
 
-      const jobs = advisors.map(async (advisor) => {
-        const slots = await fetchThursdaySlots(advisor.id);
-        advisor.slots = Array.isArray(slots) ? slots : [];
-      });
+      await Promise.all(advisors.map(async (advisor) => {
+        const thursdays = await fetchThursdaysForAdvisor(advisor.id);
+        if (thursdays) applyThursdays(advisor, thursdays);
+        else markSlotsError(advisor);
+      }));
+    }
 
-      await Promise.all(jobs);
+    // Conseillers dont la liste complète de plages est dépliée (« +N » → « Moins »).
+    const expandedAdvisors = new Set();
+
+    async function goToThursday(ymd){
+      if (!parseYmd(ymd)) return;
+      selectedThursday = ymdCompare(ymd, PROJECT_START_THURSDAY) < 0 ? PROJECT_START_THURSDAY : ymd;
+      setThursdayUi();
+      await loadSlotsForSelectedThursday();
+      applyFilters();
     }
 
     function setSpecialtyOptions(list){
@@ -1174,7 +1303,7 @@
         .sort((a, b) => a.localeCompare(b, "fr"));
       const prev = $("specialty").value;
       $("specialty").innerHTML = ['<option value="">Toutes</option>']
-        .concat(values.map((v) => `<option value="${v.replace(/"/g, "&quot;")}">${v}</option>`))
+        .concat(values.map((v) => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`))
         .join("");
       if (values.includes(prev)) $("specialty").value = prev;
     }
@@ -1216,27 +1345,71 @@
       $("quickSync").textContent = (usingLiveData ? "Live" : "Démo") + " • " + new Date().toLocaleString("fr-CA");
     }
 
+    function availabilityBlock(item){
+      const dayLabel = escapeHtml(formatThursdayShort(selectedThursday));
+
+      if (item.slotsState === "error") {
+        return `
+            <div class="avail err">
+              <div class="availLine"><span class="dot"></span>Plages non chargées</div>
+              <button class="next js-retry-slots" type="button">Réessayer</button>
+            </div>`;
+      }
+
+      const slots = item.slots || [];
+      if (slots.length) {
+        const hidden = slots.length - MAX_VISIBLE_SLOTS;
+        const expanded = hidden > 0 && expandedAdvisors.has(item.id);
+        const visible = expanded ? slots : slots.slice(0, MAX_VISIBLE_SLOTS);
+        const shown = visible.map((s) => `<span class="slot">${escapeHtml(s)}</span>`).join("");
+        const id = escapeHtml(item.id);
+        const more = hidden <= 0
+          ? ""
+          : expanded
+            ? `<button class="slot more js-toggle-slots" type="button" data-id="${id}" aria-expanded="true">Moins</button>`
+            : `<button class="slot more js-toggle-slots" type="button" data-id="${id}" aria-expanded="false" aria-label="Afficher les ${hidden} autres plages">+${hidden}</button>`;
+        return `
+            <div class="avail ok">
+              <div class="availLine"><span class="dot"></span>${slots.length} plage${slots.length > 1 ? "s" : ""} ${dayLabel}</div>
+              <div class="slots">${shown}${more}</div>
+            </div>`;
+      }
+
+      if (item.nextThursday) {
+        const nextLabel = escapeHtml(formatDayMonth(item.nextThursday));
+        return `
+            <div class="avail off">
+              <div class="availLine"><span class="dot"></span>Aucune plage ${dayLabel}
+                <span class="availSub">· Prochaine : jeudi ${nextLabel}</span></div>
+              <button class="next js-goto-thursday" type="button" data-thursday="${escapeHtml(item.nextThursday)}">Voir le ${nextLabel}</button>
+            </div>`;
+      }
+
+      return `
+            <div class="avail off">
+              <div class="availLine"><span class="dot"></span>Aucune plage ${dayLabel}
+                <span class="availSub">· aucune d'ici ${LOOKAHEAD_WEEKS} semaines</span></div>
+            </div>`;
+    }
+
     function card(item){
       const specs = (item.specialty || []).map(s => `<span class="chip">${escapeHtml(s)}</span>`).join("") || '<span class="chip">Non précisé</span>';
-      const slots = (item.slots || []).map(s => `<span class="slot">${escapeHtml(s)}</span>`).join("") || '<span class="slot">Aucune plage</span>';
-      const statusLabel = escapeHtml(text(item.status, "Disponible"));
       const name = escapeHtml(item.name);
       const role = escapeHtml(item.role);
       const image = escapeHtml(item.image || FALLBACK_IMAGE);
       const bookingUrl = escapeHtml(item.bookingUrl || "#");
+      const hasSlots = (item.slots || []).length > 0;
       return `
         <article class="advisor">
-          <div class="photo" style="background-image:url('${image}')">
-            <span class="status">${statusLabel}</span>
-          </div>
+          <div class="photo" style="background-image:url('${image}')"></div>
           <div class="cardBody">
             <h2 class="name">${name}</h2>
             <p class="role">${role}</p>
             <div class="chips">${specs}</div>
-            <div class="slots">${slots}</div>
+            ${availabilityBlock(item)}
             <div class="actions">
               <button class="ghost js-open-bio" type="button" data-id="${escapeHtml(item.id)}">Profil</button>
-              <a class="solid" target="_blank" rel="noopener noreferrer" href="${bookingUrl}">Prendre rendez-vous</a>
+              <a class="solid${hasSlots ? "" : " secondary"}" target="_blank" rel="noopener noreferrer" href="${bookingUrl}">Prendre rendez-vous</a>
             </div>
           </div>
         </article>`;
@@ -1365,10 +1538,35 @@
         await loadSlotsForSelectedThursday();
         applyFilters();
       });
-      $("advisorsGrid").addEventListener("click", (e) => {
-        const btn = e.target.closest(".js-open-bio");
-        if (!btn) return;
-        openBioModal(btn.getAttribute("data-id"));
+      $("advisorsGrid").addEventListener("click", async (e) => {
+        const bioBtn = e.target.closest(".js-open-bio");
+        if (bioBtn) {
+          openBioModal(bioBtn.getAttribute("data-id"));
+          return;
+        }
+        const toggleBtn = e.target.closest(".js-toggle-slots");
+        if (toggleBtn) {
+          const id = toggleBtn.getAttribute("data-id");
+          if (expandedAdvisors.has(id)) expandedAdvisors.delete(id);
+          else expandedAdvisors.add(id);
+          applyFilters();
+          const again = $("advisorsGrid").querySelector(`.js-toggle-slots[data-id="${CSS.escape(id)}"]`);
+          if (again) again.focus();
+          return;
+        }
+        const gotoBtn = e.target.closest(".js-goto-thursday");
+        if (gotoBtn) {
+          gotoBtn.disabled = true;
+          await goToThursday(gotoBtn.getAttribute("data-thursday"));
+          return;
+        }
+        const retryBtn = e.target.closest(".js-retry-slots");
+        if (retryBtn) {
+          retryBtn.disabled = true;
+          retryBtn.textContent = "Chargement…";
+          await loadSlotsForSelectedThursday();
+          applyFilters();
+        }
       });
       $("bioModalClose").addEventListener("click", closeBioModal);
       $("bioModal").addEventListener("click", (e) => {
