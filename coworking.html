@@ -142,6 +142,12 @@
       border-color:rgba(46,93,183,.42);
       background:#f6f9ff;
     }
+    .dateNavBtn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      border-color:var(--line);
+      background:#fff;
+    }
     .selectedThursday{
       margin-left:auto;
       min-width:250px;
@@ -278,6 +284,7 @@
     .ok{ background:linear-gradient(135deg,var(--brand),var(--brand-2)); }
     .warn{ background:linear-gradient(135deg,var(--brand),var(--brand-2)); }
     .danger{ background:var(--danger); }
+    .unknown{ background:#6c7893; }
     .name{
       position:absolute;
       z-index:1;
@@ -445,6 +452,34 @@
       display:none;
       background:#fff;
     }
+    .loadNotice{
+      margin-top:16px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 14px;
+      background:#f4f6fa;
+      color:var(--ink);
+      font-size:14px;
+      font-weight:700;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .loadNotice[hidden]{ display:none; }
+    .loadNotice span{ color:var(--muted); }
+    .retryBtn{
+      appearance:none;
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:#fff;
+      color:var(--ink);
+      font:800 13px/1.2 'Manrope', system-ui, sans-serif;
+      padding:9px 14px;
+      cursor:pointer;
+    }
+    .retryBtn:hover{ border-color:rgba(46,93,183,.42); background:#f6f9ff; }
     .lightbox{
       position:fixed;
       inset:0;
@@ -739,6 +774,7 @@
       </div>
     </section>
 
+    <section class="loadNotice" id="loadNotice" role="status" hidden></section>
     <section class="grid" id="roomsGrid"></section>
     <section class="empty" id="emptyBox">Aucune salle ne correspond aux filtres.</section>
   </main>
@@ -783,9 +819,6 @@
     const GROUP_CONTENT_CODE_DEFAULT = "coworking-group";
     const GROUP_CONTENT_CODE_SINGLE = "coworking-single-seat";
 
-    // Power Automate webhook (à configurer)
-    const AUTOMATE_WEBHOOK_URL = "";
-    const AUTOMATE_API_KEY = "";
     const FALLBACK_IMAGE = "data:image/svg+xml;utf8," + encodeURIComponent(
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">' +
       '<defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#e8eef8"/><stop offset="1" stop-color="#f6f9ff"/></linearGradient></defs>' +
@@ -793,83 +826,11 @@
       '<text x="600" y="420" text-anchor="middle" font-family="Arial,sans-serif" font-size="42" fill="#5673a6">Photo indisponible</text>' +
       '</svg>'
     );
-    const demoRooms = [
-      {
-        id:"salle-pod-fjord",
-        name:"Salle Pod Fjord",
-        site:"Hub principal",
-        capacity:6,
-        booked:4,
-        nextSlot:"13:30",
-        rules:"Silence + appel avec casque",
-        equip:["Ecran 65\"", "Visio", "Tableau blanc"],
-        location:"Aile Ouest, zone A",
-        bookingUrl:"https://outlook.office.com/book/",
-        image:"https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=80",
-        photos:[
-          "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80"
-        ]
-      },
-      {
-        id:"salle-pod-lac",
-        name:"Salle Pod Lac",
-        site:"Hub principal",
-        capacity:8,
-        booked:2,
-        nextSlot:"Immédiat",
-        rules:"Session max 2h",
-        equip:["Visio 4K", "Acoustique", "HDMI"],
-        location:"Aile Centre, zone B",
-        bookingUrl:"https://outlook.office.com/book/",
-        image:"https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&fit=crop&w=1200&q=80",
-        photos:[
-          "https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1200&q=80"
-        ]
-      },
-      {
-        id:"salle-pod-saguenay",
-        name:"Salle Pod Saguenay",
-        site:"Hub principal",
-        capacity:4,
-        booked:4,
-        nextSlot:"15:00",
-        rules:"Salle focus (1 projet)",
-        equip:["Focus room", "Ecran 32\""],
-        location:"Aile Est, zone C",
-        bookingUrl:"https://outlook.office.com/book/",
-        image:"https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80",
-        photos:[
-          "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80"
-        ]
-      },
-      {
-        id:"salle-la-flamme-du-nordet",
-        name:"Salle La Flamme du Nordet",
-        site:"Annexe Nord",
-        capacity:12,
-        booked:7,
-        nextSlot:"14:00",
-        rules:"Priorité ateliers équipes",
-        equip:["Projecteur", "Mode atelier"],
-        location:"Rez-de-chaussée",
-        bookingUrl:"https://outlook.office.com/book/",
-        image:"https://images.unsplash.com/photo-1517502884422-41eaead166d4?auto=format&fit=crop&w=1200&q=80",
-        photos:[
-          "https://images.unsplash.com/photo-1517502884422-41eaead166d4?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1604328471151-b52226907017?auto=format&fit=crop&w=1200&q=80",
-          "https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&fit=crop&w=1200&q=80"
-        ]
-      }
-    ];
-    let rooms = demoRooms.map((r) => ({ ...r }));
+    let rooms = [];
+    let roomsLoadState = "loading"; // loading | ok | error
+    let reservationsLoadState = "loading"; // loading | ok | error
+    let loadRequestId = 0;
     let selectedReservations = [];
-    let usingLiveData = false;
     let groupContentByCode = {
       [GROUP_CONTENT_CODE_DEFAULT]: {
         title: "Informations et réservation de groupe",
@@ -945,6 +906,28 @@
         .replace(/[\u0300-\u036f]/g, "")
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-+|-+$/g, "");
+    }
+
+    // Échappe le texte venant d'Airtable avant de l'insérer dans du HTML.
+    function esc(v){
+      return String(v ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    // N'accepte que les liens https (ou l'image de secours intégrée).
+    function safeUrl(v, fallback = ""){
+      const s = String(v ?? "").trim();
+      if (s.startsWith("data:image/svg+xml;")) return s;
+      try{
+        const u = new URL(s);
+        return u.protocol === "https:" ? u.href : fallback;
+      }catch{
+        return fallback;
+      }
     }
 
     function num(v){
@@ -1047,7 +1030,7 @@
       const p1 = text(readRecordField(fields, ["Photo1", "Photo 1", "Photo"]));
       const p2 = text(readRecordField(fields, ["Photo2", "Photo 2"]));
       const p3 = text(readRecordField(fields, ["Photo3", "Photo 3"]));
-      const list = [p1, p2, p3].filter(Boolean);
+      const list = [p1, p2, p3].map((p) => safeUrl(p)).filter(Boolean);
       return list.length ? list : [FALLBACK_IMAGE, FALLBACK_IMAGE, FALLBACK_IMAGE];
     }
 
@@ -1070,7 +1053,7 @@
         rules: text(readRecordField(fields, ["Regle", "Règle"]), "--"),
         equip,
         location: text(readRecordField(fields, ["Emplacement", "Location"]), "--"),
-        bookingUrl: text(readRecordField(fields, ["BookingURL", "BookingUrl", "URL"]), "#"),
+        bookingUrl: safeUrl(readRecordField(fields, ["BookingURL", "BookingUrl", "URL"]), "#"),
         image: photos[0] || FALLBACK_IMAGE,
         photos
       };
@@ -1086,11 +1069,12 @@
       };
     }
 
-    async function loadReservationsForThursday(){
+    // Renvoie les réservations confirmées du jeudi demandé, ou null en cas d'échec.
+    async function loadReservationsForThursday(targetThursday){
       const records = [];
       let offset = "";
       const formula =
-        `AND(DATETIME_FORMAT({Date},'YYYY-MM-DD')='${selectedThursday}',` +
+        `AND(DATETIME_FORMAT({Date},'YYYY-MM-DD')='${targetThursday}',` +
         `LOWER({StatutReservation}&'')='confirmed')`;
 
       try{
@@ -1108,22 +1092,28 @@
           offset = text(data.offset);
         }while(offset);
 
-        selectedReservations = records
+        return records
           .map(normalizeReservationRecord)
           .filter((reservation) =>
             reservation.roomId &&
-            reservation.date === selectedThursday &&
+            reservation.date === targetThursday &&
             reservation.status === "confirmed"
           );
-        return true;
       }catch(error){
         console.error("Chargement des réservations coworking impossible", error);
-        selectedReservations = [];
-        return false;
+        return null;
       }
     }
 
     function applyThursdayReservations(){
+      if (reservationsLoadState !== "ok"){
+        // On ne connaît pas les réservations : on n'affiche pas de faux « libre ».
+        rooms.forEach((room) => {
+          room.booked = null;
+          room.nextSlot = "--";
+        });
+        return;
+      }
       const byRoom = new Map();
 
       selectedReservations.forEach((reservation) => {
@@ -1142,10 +1132,10 @@
         const afternoonBooked = Math.min(capacity, counts.afternoon);
         room.booked = morningBooked + afternoonBooked;
         room.nextSlot = morningBooked < capacity
-          ? `${selectedThursday} 08:30`
+          ? "08:30 – 12:00"
           : afternoonBooked < capacity
-          ? `${selectedThursday} 13:00`
-          : "--";
+          ? "13:00 – 16:30"
+          : "Complet";
       });
     }
 
@@ -1161,20 +1151,64 @@
         : formatThursdayLabel(selectedThursday);
     }
 
-    async function changeSelectedThursday(dayDelta){
-      selectedThursday = addDaysYmd(selectedThursday, dayDelta);
+    function firstBookableThursday(){
+      return thursdayOnOrAfter(torontoTodayYmd());
+    }
+
+    function updateThursdayNav(){
+      // Pas de retour vers un jeudi déjà passé.
+      $("prevThursday").disabled = selectedThursday <= firstBookableThursday();
+    }
+
+    function renderLoadNotice(){
+      const box = $("loadNotice");
+      let message = "";
+      if (roomsLoadState === "error"){
+        message = "Les salles n'ont pas pu être chargées.";
+      }else if (reservationsLoadState === "error"){
+        message = "Les créneaux de ce jeudi n'ont pas pu être chargés.";
+      }
+      if (!message){
+        box.hidden = true;
+        box.innerHTML = "";
+        return;
+      }
+      box.innerHTML =
+        `<span>${message}</span>` +
+        `<button type="button" class="retryBtn js-retry-load">Réessayer</button>`;
+      box.hidden = false;
+    }
+
+    // Charge (salles si demandé) + réservations du jeudi sélectionné, puis affiche.
+    // Seule la dernière demande est affichée si on clique vite sur les jeudis.
+    async function refreshData(withRooms){
+      const requestId = ++loadRequestId;
+      const target = selectedThursday;
+      updateThursdayNav();
       updateSelectedThursdayLabel(true);
-      await loadReservationsForThursday();
+      if (withRooms) await loadRooms();
+      const reservations = await loadReservationsForThursday(target);
+      if (requestId !== loadRequestId) return;
+      selectedReservations = reservations || [];
+      reservationsLoadState = reservations ? "ok" : "error";
       applyThursdayReservations();
       updateSelectedThursdayLabel(false);
+      renderLoadNotice();
       applyFilters();
+    }
+
+    async function changeSelectedThursday(dayDelta){
+      const next = addDaysYmd(selectedThursday, dayDelta);
+      if (next < firstBookableThursday()) return;
+      selectedThursday = next;
+      await refreshData(false);
     }
 
     function setEmplacementOptionsFromRooms(list){
       const emplacements = Array.from(new Set(list.map((r) => text(r.location)).filter(Boolean))).sort((a, b) => a.localeCompare(b, "fr"));
       const prev = $("emplacement").value;
       $("emplacement").innerHTML = ['<option value="">Tous</option>']
-        .concat(emplacements.map((e) => `<option value="${e.replace(/"/g, "&quot;")}">${e}</option>`))
+        .concat(emplacements.map((e) => `<option value="${esc(e)}">${esc(e)}</option>`))
         .join("");
       if (emplacements.includes(prev)) $("emplacement").value = prev;
     }
@@ -1190,14 +1224,6 @@
     }
 
     async function loadRooms(){
-      if (!COWORKING_FEED_URL.startsWith("http")){
-        usingLiveData = false;
-        rooms = demoRooms.map((r) => ({ ...r }));
-        setEmplacementOptionsFromRooms(rooms);
-        setCapacityOptionsFromRooms(rooms);
-        updateRealSync("");
-        return;
-      }
       try{
         const res = await fetch(COWORKING_FEED_URL, { cache: "no-store" });
         if (!res.ok) throw new Error("HTTP " + res.status);
@@ -1210,22 +1236,17 @@
           r.bookingUrl !== "#" ||
           r.photos.some((p) => p && p !== FALLBACK_IMAGE)
         );
-        if (parsed.length && withRealShape.length){
-          usingLiveData = true;
-          rooms = withRealShape;
-          setEmplacementOptionsFromRooms(rooms);
-          setCapacityOptionsFromRooms(rooms);
-          const last = arr
-            .map((x) => x && x.fields ? readRecordField(x.fields, ["DerniereMiseAJour", "DernièreMiseAJour"], "") : "")
-            .find((v) => String(v || "").trim() !== "");
-          updateRealSync(last || "");
-          return;
-        }
-      }catch{}
-      usingLiveData = false;
-      rooms = demoRooms.map((r) => ({ ...r }));
-      setEmplacementOptionsFromRooms(rooms);
-      setCapacityOptionsFromRooms(rooms);
+        roomsLoadState = "ok";
+        rooms = withRealShape;
+        setEmplacementOptionsFromRooms(rooms);
+        setCapacityOptionsFromRooms(rooms);
+        updateRealSync("");
+        return;
+      }catch(error){
+        console.error("Chargement des salles coworking impossible", error);
+      }
+      // Échec : aucune salle inventée, on garde la liste précédente si elle existe.
+      roomsLoadState = rooms.length ? "ok" : "error";
       updateRealSync("");
     }
     async function loadGroupContent(){
@@ -1267,7 +1288,14 @@
       }
     }
 
+    function freeSlots(room){
+      if (room.booked == null) return null;
+      const totalSlots = Math.max(0, room.capacity * 2);
+      return Math.max(0, totalSlots - Math.min(totalSlots, room.booked));
+    }
+
     function getStatus(room){
+      if (room.booked == null) return { label:"Non chargé", cls:"unknown" };
       const totalSlots = Math.max(0, room.capacity * 2);
       const bookedSlots = Math.max(0, Math.min(totalSlots, room.booked));
       const left = Math.max(0, totalSlots - bookedSlots);
@@ -1288,11 +1316,13 @@
 
     function renderStats(list){
       const s = computeStats(list);
+      const roomsKnown = roomsLoadState === "ok";
+      const known = roomsKnown && reservationsLoadState === "ok";
       $("stats").innerHTML = [
-        { v:s.totalRooms, k:"Salles actives" },
-        { v:s.totalCapacity, k:"Places totales" },
-        { v:s.used, k:"Créneaux réservés" },
-        { v:s.availableRooms, k:"Salles disponibles" }
+        { v:roomsKnown ? s.totalRooms : "--", k:"Salles actives" },
+        { v:roomsKnown ? s.totalCapacity : "--", k:"Places totales" },
+        { v:known ? s.used : "--", k:"Créneaux réservés" },
+        { v:known ? s.availableRooms : "--", k:"Salles disponibles" }
       ].map(item =>
         `<article class="stat"><strong>${item.v}</strong><span>${item.k}</span></article>`
       ).join("");
@@ -1338,27 +1368,31 @@
 
     function roomCard(room){
       const status = getStatus(room);
+      const known = room.booked != null;
       const totalSlots = Math.max(0, room.capacity * 2);
-      const bookedSlots = Math.max(0, Math.min(totalSlots, room.booked));
-      const left = Math.max(0, totalSlots - bookedSlots);
-      const rate = totalSlots > 0 ? Math.min(100, Math.round((bookedSlots / totalSlots) * 100)) : 0;
-      const metricLabel = bookedSlots === 1
+      const bookedSlots = known ? Math.max(0, Math.min(totalSlots, room.booked)) : 0;
+      const rate = known && totalSlots > 0 ? Math.min(100, Math.round((bookedSlots / totalSlots) * 100)) : 0;
+      const metricLabel = !known
+        ? "Créneaux non chargés"
+        : bookedSlots === 1
         ? `${bookedSlots}/${totalSlots} créneau réservé`
         : `${bookedSlots}/${totalSlots} créneaux réservés`;
       const capacityLabel = room.capacity === 1 ? "place" : "places";
-      const equip = room.equip.map(v => `<span class="chip">${v}</span>`).join("");
+      const equip = room.equip.map(v => `<span class="chip">${esc(v)}</span>`).join("");
       const photos = getRoomPhotos(room);
+      const id = esc(room.id);
+      const name = esc(room.name);
       const thumbs = photos.map((url, idx) =>
-        `<button type="button" class="thumb is-loading${idx === 0 ? " active" : ""}" data-room-id="${room.id}" data-photo-index="${idx}" aria-label="Photo ${idx + 1}">
-           <img src="${url}" alt="Photo ${idx + 1} ${room.name}" loading="lazy" />
+        `<button type="button" class="thumb is-loading${idx === 0 ? " active" : ""}" data-room-id="${id}" data-photo-index="${idx}" aria-label="Photo ${idx + 1}">
+           <img src="${esc(url)}" alt="Photo ${idx + 1} ${name}" loading="lazy" />
          </button>`
       ).join("");
       return `
-        <article class="room" data-room-id="${room.id}" data-status="${status.cls}">
+        <article class="room" data-room-id="${id}" data-status="${status.cls}">
           <div class="cover is-loading">
-            <img class="coverMain js-open-gallery" data-room-id="${room.id}" data-photo-index="0" src="${photos[0]}" alt="${room.name}" loading="lazy" />
+            <img class="coverMain js-open-gallery" data-room-id="${id}" data-photo-index="0" src="${esc(photos[0])}" alt="${name}" loading="lazy" />
             <span class="badge ${status.cls}">${status.label}</span>
-            <div class="name">${room.name}</div>
+            <div class="name">${name}</div>
           </div>
           <div class="body">
             <div class="thumbRow">${thumbs}</div>
@@ -1366,13 +1400,13 @@
             <div class="meter"><i style="width:${rate}%"></i></div>
             <div class="detailsBox">
               <div class="detailRow"><span>Capacité</span><b>${room.capacity} ${capacityLabel}</b></div>
-              <div class="detailRow"><span>Prochain créneau</span><b>${room.nextSlot || "--"}</b></div>
-              <div class="detailRow"><span>Règle</span><b>${room.rules || "--"}</b></div>
+              <div class="detailRow"><span>Prochain créneau</span><b>${esc(room.nextSlot || "--")}</b></div>
+              <div class="detailRow"><span>Règle</span><b>${esc(room.rules || "--")}</b></div>
             </div>
             <div class="meta">${equip}</div>
             <div class="roomFooter">
-              <button type="button" class="btn has-icon js-open-info" data-room-id="${room.id}"><span class="material-symbols-outlined" aria-hidden="true">info</span>Infos</button>
-              <a class="btn primary js-reserve" data-room-id="${room.id}" data-disabled="0" target="_blank" rel="noopener noreferrer" href="${room.bookingUrl}" aria-disabled="false">Réserver</a>
+              <button type="button" class="btn has-icon js-open-info" data-room-id="${id}"><span class="material-symbols-outlined" aria-hidden="true">info</span>Infos</button>
+              <a class="btn primary js-reserve" data-room-id="${id}" data-disabled="0" target="_blank" rel="noopener noreferrer" href="${esc(room.bookingUrl)}" aria-disabled="false">Réserver</a>
             </div>
           </div>
         </article>`;
@@ -1393,37 +1427,6 @@
     }
     function closeInfoModal(){
       closeModalSmart("infoModal");
-    }
-
-    function hasAutomateWebhook(){
-      return AUTOMATE_WEBHOOK_URL.startsWith("https://") && !!AUTOMATE_API_KEY;
-    }
-
-    async function sendReserveSignal(room){
-      if (!hasAutomateWebhook()) return;
-      const now = new Date();
-      const payload = {
-        salleId: room.id,
-        action: "reserve",
-        reservationId: "prebooking_" + room.id + "_" + now.getTime(),
-        date: now.toISOString().slice(0, 10),
-        startTime: "",
-        endTime: "",
-        email: "",
-        fullName: "",
-        source: "coworking_page"
-      };
-      try{
-        await fetch(AUTOMATE_WEBHOOK_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": AUTOMATE_API_KEY
-          },
-          body: JSON.stringify(payload),
-          keepalive: true
-        });
-      }catch{}
     }
 
     const lightboxState = { roomId:"", index:0 };
@@ -1462,8 +1465,8 @@
       $("lightboxTitle").textContent = room.name;
       setLightboxImage(photos[lightboxState.index], room.name + " photo " + (lightboxState.index + 1));
       $("lightboxStrip").innerHTML = photos.map((url, i) =>
-        `<button type="button" class="lightboxThumb${i === lightboxState.index ? " active" : ""}" data-room-id="${roomId}" data-photo-index="${i}" aria-label="Photo ${i + 1}">
-           <img src="${url}" alt="Miniature ${i + 1}" loading="lazy" />
+        `<button type="button" class="lightboxThumb${i === lightboxState.index ? " active" : ""}" data-room-id="${esc(roomId)}" data-photo-index="${i}" aria-label="Photo ${i + 1}">
+           <img src="${esc(url)}" alt="Miniature ${i + 1}" loading="lazy" />
          </button>`
       ).join("");
       $("lightbox").classList.add("is-open");
@@ -1493,11 +1496,18 @@
         if (emplacement && r.location !== emplacement) return false;
         if (capacityExact !== null && r.capacity !== capacityExact) return false;
         return true;
-      }).sort((a,b) => (a.capacity - a.booked) - (b.capacity - b.booked));
+      }).sort((a,b) => {
+        // Les salles avec le plus de créneaux libres d'abord, puis par nom.
+        const diff = (freeSlots(b) ?? 0) - (freeSlots(a) ?? 0);
+        return diff || String(a.name).localeCompare(String(b.name), "fr");
+      });
 
       renderStats(filtered.length ? filtered : rooms);
       $("roomsGrid").innerHTML = filtered.map(roomCard).join("");
-      $("emptyBox").classList.toggle("show", filtered.length === 0);
+      $("emptyBox").textContent = rooms.length
+        ? "Aucune salle ne correspond aux filtres."
+        : "Aucune salle à afficher pour le moment.";
+      $("emptyBox").classList.toggle("show", filtered.length === 0 && roomsLoadState !== "error");
       document.querySelectorAll(".coverMain, .thumb img").forEach((img) => {
         if (img.complete && img.naturalWidth > 0){
           markImageLoaded(img);
@@ -1508,7 +1518,7 @@
         const cur = getStatus(room).cls;
         const prev = statusMemory[room.id];
         if (prev && prev !== cur){
-          const card = $("roomsGrid").querySelector(`.room[data-room-id="${room.id}"]`);
+          const card = $("roomsGrid").querySelector(`.room[data-room-id="${CSS.escape(room.id)}"]`);
           if (card){
             card.classList.add("status-bump");
             setTimeout(() => card.classList.remove("status-bump"), 620);
@@ -1520,21 +1530,12 @@
 
     async function boot(){
       await loadGroupContent();
-      await loadRooms();
-      updateSelectedThursdayLabel(true);
-      await loadReservationsForThursday();
-      applyThursdayReservations();
-      updateSelectedThursdayLabel(false);
       ["search","emplacement","capacity"].forEach(id => $(id).addEventListener("input", applyFilters));
       $("prevThursday").addEventListener("click", () => changeSelectedThursday(-7));
       $("nextThursday").addEventListener("click", () => changeSelectedThursday(7));
-      $("refreshBtn").addEventListener("click", async () => {
-        updateSelectedThursdayLabel(true);
-        await loadRooms();
-        await loadReservationsForThursday();
-        applyThursdayReservations();
-        updateSelectedThursdayLabel(false);
-        applyFilters();
+      $("refreshBtn").addEventListener("click", () => refreshData(true));
+      $("loadNotice").addEventListener("click", (e) => {
+        if (e.target.closest(".js-retry-load")) refreshData(true);
       });
       $("mobileFilterToggle").addEventListener("click", () => {
         const toolbar = $("toolbar");
@@ -1579,15 +1580,9 @@
           return;
         }
         if (!a) return;
-        if (a.getAttribute("data-disabled") === "1"){
+        if (a.getAttribute("data-disabled") === "1" || a.getAttribute("href") === "#"){
           e.preventDefault();
-          return;
         }
-        const roomId = a.getAttribute("data-room-id");
-        const room = rooms.find(r => r.id === roomId);
-        if (!room) return;
-        // Signal "intention de reservation" avant redirection Booking.
-        sendReserveSignal(room);
       });
       $("lightboxClose").addEventListener("click", closeLightbox);
       $("lightbox").addEventListener("click", (e) => {
@@ -1649,7 +1644,7 @@
         else moveLightbox(1);
       }, { passive: true });
 
-      applyFilters();
+      await refreshData(true);
     }
 
     boot();
