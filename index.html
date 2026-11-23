@@ -519,6 +519,31 @@
       animation: shimmer 1.2s linear infinite;
     }
 
+    .gridError{
+      grid-column: 1 / -1;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      padding: 48px 16px;
+      text-align:center;
+      background:#f4f6fa;
+    }
+    .gridErrorText{
+      margin:0;
+      font-size:15px;
+      font-weight:600;
+      color: var(--tslsj-navy);
+    }
+    .gridErrorBtn{
+      background:#fff;
+      color: var(--tslsj-navy);
+      border:1px solid var(--tint-black-14);
+      font-weight:800;
+      padding:9px 16px;
+    }
+
     .emptyModal{
       position: fixed;
       inset: 0;
@@ -1926,36 +1951,49 @@
 
     const MIN_START_THURSDAY = "2026-03-05";
 
-    let thursdaysWithDataCache = null;
+    // Toutes les activités sont téléchargées une seule fois, puis réutilisées
+    // pendant 5 minutes (changement de jeudi, filtre, navigation).
+    const ACTIVITIES_CACHE_MS = 5 * 60 * 1000;
+    let activitiesCache = null; // { at, promise }
+
+    function fetchAllActivities(force = false){
+      const now = Date.now();
+      if (!force && activitiesCache && (now - activitiesCache.at) < ACTIVITIES_CACHE_MS){
+        return activitiesCache.promise;
+      }
+      const promise = (async () => {
+        const all = [];
+        let offset = "";
+        do{
+          const url = new URL("https://flat-credit-0421.lcollard.workers.dev/");
+          url.searchParams.set("pageSize", "100");
+          if (offset) url.searchParams.set("offset", offset);
+
+          const res = await fetch(url.toString());
+          if (!res.ok) throw new Error("Airtable API error " + res.status);
+          const data = await res.json();
+          all.push(...(data.records || []).map(r => ({ id:r.id, ...r.fields })));
+          offset = data.offset || "";
+        } while (offset);
+        return all;
+      })();
+      activitiesCache = { at: now, promise };
+      // Un échec ne doit pas rester en mémoire : on réessaiera au prochain appel.
+      promise.catch(() => {
+        if (activitiesCache && activitiesCache.promise === promise) activitiesCache = null;
+      });
+      return promise;
+    }
 
     async function getThursdaysWithData(){
-      if (thursdaysWithDataCache) return thursdaysWithDataCache;
-
+      const all = await fetchAllActivities();
       const datesWithData = new Set();
-      let offset = "";
-
-      do{
-        const url = new URL("https://flat-credit-0421.lcollard.workers.dev/");
-        url.searchParams.set("pageSize", "100");
-        if (offset) url.searchParams.set("offset", offset);
-
-        const res = await fetch(url.toString());
-        if (!res.ok) throw new Error("Airtable unavailable");
-        const data = await res.json();
-        const rows = data.records || [];
-
-        for (const rec of rows){
-          const f = rec.fields || {};
-          const cands = dateCandidatesToYMD(f[F_DATE]);
-          for (const ymd of cands){
-            if (isValidThursdayYMD(ymd)) datesWithData.add(ymd);
-          }
+      for (const r of all){
+        for (const ymd of dateCandidatesToYMD(r[F_DATE])){
+          if (isValidThursdayYMD(ymd)) datesWithData.add(ymd);
         }
-        offset = data.offset || "";
-      } while (offset);
-
-      thursdaysWithDataCache = Array.from(datesWithData).sort();
-      return thursdaysWithDataCache;
+      }
+      return Array.from(datesWithData).sort();
     }
 
     async function findNextThursdayWithData(startYMD, maxWeeks = 26){
@@ -2362,31 +2400,17 @@
       return counts;
     }
 
-    async function fetchRecords(){
-      const dateISO = $("date").value;
-      const type = $("filtre").value;
-      const all = [];
-      let offset = "";
-
-      do{
-        const url = new URL("https://flat-credit-0421.lcollard.workers.dev/");
-        url.searchParams.set("pageSize","100");
-        if (offset) url.searchParams.set("offset", offset);
-
-        const res = await fetch(url.toString());
-        if(!res.ok) throw new Error("Airtable API error " + res.status);
-        const data = await res.json();
-        const chunk = (data.records || []).map(r => ({ id:r.id, ...r.fields }));
-        all.push(...chunk);
-        offset = data.offset || "";
-      } while (offset);
-
-      return all.filter(r => {
-        const recDateCandidates = dateCandidatesToYMD(r[F_DATE]);
-        const dateMatch = recDateCandidates.includes(dateISO);
-        const typeMatch = !type || (r[F_TYPE] || "") === type;
-        return dateMatch && typeMatch;
-      });
+    // dayRecords : toutes les activités du jeudi (sert à construire le filtre).
+    // shown : celles qui correspondent au filtre choisi.
+    async function fetchRecords(dateISO, type, force = false){
+      const all = await fetchAllActivities(force);
+      const dayRecords = all.filter(r => dateCandidatesToYMD(r[F_DATE]).includes(dateISO));
+      // Si le type choisi n'existe pas ce jeudi-là, le filtre revient à « Tous ».
+      const typeExists = !type || dayRecords.some(r => (r[F_TYPE] || "") === type);
+      const shown = typeExists
+        ? dayRecords.filter(r => !type || (r[F_TYPE] || "") === type)
+        : dayRecords;
+      return { dayRecords, shown };
     }
 
     async function loadPromoBand(){
@@ -3095,33 +3119,70 @@
       setTimeout(() => grid.classList.remove("is-transitioning-in"), 240);
     }
 
+    function renderLoadError(){
+      const header = $("header");
+      const body = $("body");
+      header.innerHTML = "";
+      body.innerHTML = "";
+      closeEmptyModal();
+
+      const box = document.createElement("div");
+      box.className = "gridError";
+      box.setAttribute("role", "status");
+
+      const msg = document.createElement("p");
+      msg.className = "gridErrorText";
+      msg.textContent = "Les activités de ce jeudi n'ont pas pu être chargées.";
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "gridErrorBtn";
+      btn.textContent = "Réessayer";
+      btn.addEventListener("click", () => load({ withSkeleton: true, force: true }));
+
+      box.appendChild(msg);
+      box.appendChild(btn);
+      body.appendChild(box);
+    }
+
+    let loadRequestId = 0;
+
     async function load(opts = {}){
-      const { withSkeleton = false, animateSwap = false } = opts;
+      const { withSkeleton = false, animateSwap = false, force = false } = opts;
+      const requestId = ++loadRequestId;
+      const dateISO = $("date").value;
+      const type = $("filtre").value;
       $("status").setAttribute("aria-busy", "true");
       $("status").textContent = "Chargement…";
       if (animateSwap) await animateGridSwap();
       if (withSkeleton) renderSkeleton();
       try{
-        const records = await fetchRecords();
+        const { dayRecords, shown } = await fetchRecords(dateISO, type, force);
         let engagementCounts = {};
         try{
-          engagementCounts = await fetchEngagementCounts($("date").value);
+          engagementCounts = await fetchEngagementCounts(dateISO);
         }catch(e){
           console.warn("Impossible de charger les compteurs d'engagement", e);
         }
-        buildTypeOptions(records);
-        render(records, engagementCounts);
-        if (records.length > 0){
-          writeLastThursdayWithData($("date").value);
+        // Un autre jeudi a été demandé entre-temps : on n'affiche pas celui-ci.
+        if (requestId !== loadRequestId) return;
+        buildTypeOptions(dayRecords);
+        render(shown, engagementCounts);
+        if (dayRecords.length > 0){
+          writeLastThursdayWithData(dateISO);
         }
-        const n = records.length;
+        const n = shown.length;
         $("status").textContent = n + " activité" + (n > 1 ? "s" : "");
       }catch(e){
-        $("status").textContent = "Erreur";
+        if (requestId !== loadRequestId) return;
         console.error(e);
+        renderLoadError();
+        $("status").textContent = "Non chargé";
       } finally {
-        $("status").setAttribute("aria-busy", "false");
-        if (animateSwap) finishGridSwap();
+        if (requestId === loadRequestId){
+          $("status").setAttribute("aria-busy", "false");
+          if (animateSwap) finishGridSwap();
+        }
       }
     }
 
