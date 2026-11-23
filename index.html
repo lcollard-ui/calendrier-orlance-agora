@@ -810,6 +810,34 @@
       color:#fff;
       border-color: rgba(27,54,93,.15);
     }
+    .shareNets{
+      margin-top: 12px;
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap:8px;
+    }
+    @media (max-width: 480px){
+      .shareNets{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    .shareNet{
+      min-height: 40px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      border:1px solid rgba(27,54,93,.2);
+      background:#fff;
+      color:var(--tslsj-navy);
+    }
+    .shareNet:hover{ border-color: var(--tslsj-blue); }
+    .shareNet:focus-visible{
+      outline: 3px solid rgba(58,93,174,.3);
+      outline-offset: 2px;
+    }
 
     button:focus-visible,
     select:focus-visible,
@@ -1651,6 +1679,12 @@
         <button type="button" class="emptyModalClose" id="shareClose" aria-label="Fermer">×</button>
       </div>
       <p class="shareText" id="shareText">Copie le lien ci-dessous pour le partager.</p>
+      <div class="shareNets">
+        <a class="shareNet" id="shareWhatsapp" href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <a class="shareNet" id="shareFacebook" href="#" target="_blank" rel="noopener noreferrer">Facebook</a>
+        <a class="shareNet" id="shareLinkedin" href="#" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a class="shareNet" id="shareEmail" href="#" target="_blank" rel="noopener noreferrer">Courriel</a>
+      </div>
       <div class="shareField">
         <input id="shareInput" class="shareInput" type="text" readonly />
       </div>
@@ -2107,8 +2141,18 @@
     }
 
     function openShareModal(shareText, shareUrl){
+      const url = shareUrl || window.location.href;
+      const text = shareText || "";
+      const enc = encodeURIComponent;
       $("shareText").textContent = shareText || "Copie le lien ci-dessous pour le partager.";
-      $("shareInput").value = shareUrl || window.location.href;
+      $("shareInput").value = url;
+      // Liens de partage : fonctionnent même dans l'iframe du site corporatif,
+      // où le menu de partage natif du téléphone est bloqué.
+      $("shareWhatsapp").href = "https://wa.me/?text=" + enc((text ? text + " " : "") + url);
+      $("shareFacebook").href = "https://www.facebook.com/sharer/sharer.php?u=" + enc(url);
+      $("shareLinkedin").href = "https://www.linkedin.com/sharing/share-offsite/?url=" + enc(url);
+      $("shareEmail").href = "mailto:?subject=" + enc(text || "Tourisme Saguenay-Lac-Saint-Jean")
+        + "&body=" + enc((text ? text + "\n\n" : "") + url);
       openModalSmart("shareModal", ".shareCard");
       setTimeout(() => {
         $("shareInput").focus();
@@ -2505,7 +2549,7 @@
 
       sel.innerHTML =
         '<option value="">Tous</option>' +
-        Array.from(types).sort().map(t => '<option>' + t + '</option>').join("");
+        Array.from(types).sort().map(t => '<option value="' + escapeHtml(t) + '">' + escapeHtml(t) + '</option>').join("");
 
       sel.value = Array.from(types).includes(current) ? current : "";
     }
@@ -2575,7 +2619,7 @@
 
         const label = r[F_TIME_LABEL] || (minutesToHHMM(s) + " – " + minutesToHHMM(e));
         const actionLabel = r["Action"] || "";
-        const actionUrl   = r["ActionURL"] || "";
+        const actionUrl   = toSafeUrl(r["ActionURL"]);
         const description = readFirstField(r, F_DESCRIPTION_CANDIDATES);
         const infoUrl = readFirstField(r, F_INFO_URL_CANDIDATES);
         const infoCtaLabel = readFirstField(r, F_INFO_CTA_LABEL_CANDIDATES);
@@ -2643,16 +2687,16 @@
         }
 
         card.innerHTML =
-          '<div class="t">' + ev.title + '</div>' +
-          (ev.type ? '<div class="tag">' + ev.type + '</div>' : '') +
-          '<div class="m">' + ev.label + '</div>';
+          '<div class="t">' + escapeHtml(ev.title) + '</div>' +
+          (ev.type ? '<div class="tag">' + escapeHtml(ev.type) + '</div>' : '') +
+          '<div class="m">' + escapeHtml(ev.label) + '</div>';
 
         if (ev.actionLabel){
           if (isReseautageInfo){
             const cta = document.createElement("button");
             cta.type = "button";
             cta.className = "cta ctaButton";
-            cta.innerHTML = ev.actionLabel + ' <span class="arrow">→</span>';
+            cta.innerHTML = escapeHtml(ev.actionLabel) + ' <span class="arrow">→</span>';
             cta.addEventListener("click", (e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -2663,7 +2707,7 @@
           }else{
             const cta = document.createElement("span");
             cta.className = "cta";
-            cta.innerHTML = ev.actionLabel + ' <span class="arrow">→</span>';
+            cta.innerHTML = escapeHtml(ev.actionLabel) + ' <span class="arrow">→</span>';
             card.appendChild(cta);
           }
         }
@@ -2686,11 +2730,11 @@
           engageBar.innerHTML =
             '<button type="button" class="engageBtn" data-act="like" title="J\'aime" aria-label="J\'aime">' +
               '<svg viewBox="0 0 24 24" class="engageIconSvg" aria-hidden="true"><path d="M12 21s-6.5-4.35-9-8c-2-2.9-.9-7 2.4-8.2 2-.7 4.3-.1 5.8 1.6 1.5-1.7 3.8-2.3 5.8-1.6 3.3 1.2 4.4 5.3 2.4 8.2-2.5 3.65-9 8-9 8z"></path></svg>' +
-              '<span class="engageCount" data-count-for="like">' + String(baseCounts.like || 0) + '</span>' +
+              '<span class="engageCount" data-count-for="like">' + (Number(baseCounts.like) || 0) + '</span>' +
             '</button>' +
             '<button type="button" class="engageBtn" data-act="share" title="Je partage" aria-label="Je partage">' +
               '<svg viewBox="0 0 24 24" class="engageIconSvg" aria-hidden="true"><circle cx="18" cy="5" r="2.2"></circle><circle cx="6" cy="12" r="2.2"></circle><circle cx="18" cy="19" r="2.2"></circle><path d="M8 11l7.8-4.6M8 13l7.8 4.6"></path></svg>' +
-              '<span class="engageCount" data-count-for="share">' + String(baseCounts.share || 0) + '</span>' +
+              '<span class="engageCount" data-count-for="share">' + (Number(baseCounts.share) || 0) + '</span>' +
             '</button>';
           card.appendChild(engageBar);
 
@@ -2743,11 +2787,19 @@
                   email: profile.email || "",
                   source: "calendrier_v2"
                 };
-                const synced = await sendEngagementToAirtable(eventPayload);
-                if (row[act]){
-                  showToast(synced ? ("Statut " + statusLabel + " enregistré") : ("Statut " + statusLabel + " enregistré (local)"));
-                }else{
-                  showToast(synced ? "Statut retiré" : "Statut retiré (local)");
+                // Envoi à Airtable en arrière-plan : on n'attend pas la réponse avant
+                // d'ouvrir le partage, sinon le navigateur ne considère plus le clic
+                // comme récent et refuse d'ouvrir le menu de partage.
+                sendEngagementToAirtable(eventPayload).then((synced) => {
+                  if (act === "share" && row[act]) return; // le partage a sa propre interface
+                  if (row[act]){
+                    showToast(synced ? ("Statut " + statusLabel + " enregistré") : ("Statut " + statusLabel + " enregistré (local)"));
+                  }else{
+                    showToast(synced ? "Statut retiré" : "Statut retiré (local)");
+                  }
+                });
+                if (act === "share" && !row[act]){
+                  return;
                 }
                 if (act === "share" && row[act]){
                   const shareText = ev.title + " - " + formatSelectedDayFR($("date").value) + " (" + ev.label + ")";
@@ -2758,19 +2810,9 @@
                         ? { title: "Tourisme Saguenay-Lac-Saint-Jean", text: shareText, url: shareUrl }
                         : { title: "Tourisme Saguenay-Lac-Saint-Jean", text: shareText };
                       await navigator.share(payload);
-                    }catch{
-                      openShareModal(shareText, shareUrl);
-                    }
-                  }else if (navigator.clipboard && navigator.clipboard.writeText){
-                    try{
-                      if (!shareUrl){
-                        openShareModal(shareText, shareUrl);
-                        return;
-                      }
-                      await navigator.clipboard.writeText(shareUrl);
-                      showToast("Lien copié");
-                    }catch{
-                      openShareModal(shareText, shareUrl);
+                    }catch(err){
+                      // AbortError = la personne a fermé le menu de partage elle-même.
+                      if (!err || err.name !== "AbortError") openShareModal(shareText, shareUrl);
                     }
                   }else{
                     openShareModal(shareText, shareUrl);
